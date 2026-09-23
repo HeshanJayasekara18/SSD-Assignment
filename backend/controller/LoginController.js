@@ -3,6 +3,22 @@ const BussinessAgent = require('../model/BussinessAgent');
 const Bussiness = require('../model/Bussiness'); 
 const Tourist = require('../model/Tourist');   
 const TourGuide = require('../model/TourGuide');
+const jwt = require('jsonwebtoken');
+
+const buildToken = (user) => {
+    if (!process.env.JWT_SECRET) {
+        throw new Error('JWT_SECRET is not configured');
+    }
+
+    return jwt.sign({
+        user: {
+            id: user._id,
+            userID: user.userID,
+            email: user.email,
+            role: user.role
+        }
+    }, process.env.JWT_SECRET, { expiresIn: '1d' });
+};
 
 
 const login = async (req, res) => {
@@ -11,14 +27,27 @@ const login = async (req, res) => {
 
         const user = await User.findOne({ email });
 
-        console.log("USER DETAILS", user);
-
         if (!user) {
             return res.status(400).json({ message: "Invalid email or password" });
         }
 
         if (user.password !== password) {
             return res.status(400).json({ message: "Invalid email or password" });
+        }
+
+        const token = buildToken(user);
+
+        if(user.role=='Admin'){
+            return res.status(200).json({
+                message: "Login successful",
+                token,
+                userDetails: {
+                    userID: user.userID,
+                    username: user.username,
+                    role: user.role,
+                    email: user.email,
+                }
+            });
         }
 
         if(user.role=='Bussiness'){
@@ -37,6 +66,7 @@ const login = async (req, res) => {
 
             res.status(200).json({
                 message: "Login successful",
+                token,
                 userDetails: {
                     userID: user.userID,
                     username: user.username,
@@ -62,6 +92,7 @@ const login = async (req, res) => {
 
             res.status(200).json({
                 message: "Login successful",
+                token,
                 userDetails: {
                     userID: user.userID,
                     username: user.username,
@@ -86,6 +117,7 @@ const login = async (req, res) => {
 
             return res.status(200).json({
                 message: "Login successful",
+                token,
                 userDetails: {
                     userID: user.userID,
                     username: user.username,
@@ -108,4 +140,3 @@ const login = async (req, res) => {
 };
 
 module.exports = { login };
-
