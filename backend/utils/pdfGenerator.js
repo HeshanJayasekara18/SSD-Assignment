@@ -44,7 +44,7 @@ exports.generatePDF = (payment) => {
 
       doc.fontSize(12).text('Payment Details');
       doc.fontSize(10).text(`Amount: $${payment.totalAmount?.toLocaleString() || '0'}`);
-      doc.fontSize(10).text(`Payment Method: Credit Card (ending in ${payment.cardDetails?.lastFour || 'N/A'})`);
+      doc.fontSize(10).text(`Payment Method: ${payment.cardBrand || 'Card'} ending in ${payment.cardLast4 || 'N/A'}`);
       doc.fontSize(10).text(`Status: ${payment.status?.toUpperCase() || 'N/A'}`);
       doc.fontSize(10).text(`Date: ${payment.createdAt ? new Date(payment.createdAt).toLocaleDateString() : 'N/A'}`);
       doc.moveDown(2);
