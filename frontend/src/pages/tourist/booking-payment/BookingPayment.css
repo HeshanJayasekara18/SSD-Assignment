@@ -1,0 +1,610 @@
+/* BookingPayment.css - Modern UI Design */
+:root {
+  --primary-color: #4a6fa5;
+  --secondary-color: #6b8cbc;
+  --accent-color: #ff6b6b;
+  --light-bg: #f8fafc;
+  --dark-text: #2d3748;
+  --light-text: #ffffff;
+  --success-color: #10b981;
+  --border-radius: 12px;
+  --box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  --transition: all 0.3s ease;
+}
+
+/* Global styles */
+body {
+  font-family: 'Inter', 'Segoe UI', Roboto, -apple-system, sans-serif;
+  background-color: #f0f4f8;
+  color: var(--dark-text);
+  line-height: 1.6;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 0 20px;
+}
+
+/* Booking Table Section */
+.booking-table {
+  background: white;
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  padding: 2rem;
+  margin-bottom: 2rem;
+  transition: var(--transition);
+}
+
+.booking-table h2 {
+  font-size: 1.75rem;
+  color: var(--primary-color);
+  margin-bottom: 1.5rem;
+  font-weight: 600;
+  position: relative;
+  padding-bottom: 0.75rem;
+}
+
+.booking-table h2::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 80px;
+  height: 4px;
+  background: var(--accent-color);
+  border-radius: 2px;
+}
+
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  overflow: hidden;
+}
+
+thead {
+  background-color: #f1f5f9;
+}
+
+th {
+  text-align: left;
+  padding: 1.25rem 1rem;
+  font-weight: 600;
+  color: var(--primary-color);
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+tbody tr {
+  transition: var(--transition);
+  border-bottom: 1px solid #e2e8f0;
+}
+
+tbody tr:hover {
+  background-color: rgba(74, 111, 165, 0.05);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+}
+
+td {
+  padding: 1.25rem 1rem;
+  vertical-align: middle;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.amount {
+  font-weight: 600;
+  color: var(--primary-color);
+}
+
+.delete-icon {
+  color: var(--accent-color);
+  cursor: pointer;
+  transition: var(--transition);
+  background: #fff1f1;
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  padding: 8px;
+}
+
+.delete-icon:hover {
+  color: #ff4747;
+  background: #ffe6e6;
+  transform: scale(1.1);
+}
+
+/* Order Summary Section */
+.order-summary {
+  background: white;
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  padding: 2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.order-summary::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 150px;
+  height: 150px;
+  background: radial-gradient(circle, rgba(74, 111, 165, 0.1) 0%, rgba(255, 255, 255, 0) 70%);
+  border-radius: 50%;
+  z-index: 0;
+}
+
+.order-summary h2 {
+  font-size: 1.75rem;
+  color: var(--primary-color);
+  margin-bottom: 1.5rem;
+  font-weight: 600;
+  position: relative;
+  padding-bottom: 0.75rem;
+}
+
+.order-summary h2::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 80px;
+  height: 4px;
+  background: var(--accent-color);
+  border-radius: 2px;
+}
+
+.order-summary p {
+  font-size: 1.1rem;
+  margin: 0.75rem 0;
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+}
+
+.order-summary p::after {
+  content: "";
+  position: absolute;
+  bottom: -5px;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(to right, transparent, #e2e8f0, transparent);
+}
+
+.total-amount {
+  font-size: 1.4rem !important;
+  color: var(--primary-color);
+  margin-top: 1.5rem !important;
+  padding-top: 1.5rem;
+  border-top: 2px dashed #e2e8f0;
+}
+
+.total-amount::after {
+  display: none;
+}
+
+.id-summary {
+  background: #f8fafc;
+  border-radius: var(--border-radius);
+  padding: 1.25rem;
+  margin: 1.5rem 0;
+  border-left: 4px solid var(--secondary-color);
+}
+
+.id-summary p {
+  font-size: 0.9rem;
+  color: #64748b;
+  margin: 0.5rem 0;
+}
+
+.id-summary p::after {
+  display: none;
+}
+
+/* Button Styles */
+.pay-button {
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  color: var(--light-text);
+  border: none;
+  border-radius: var(--border-radius);
+  padding: 1rem 2rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  display: block;
+  width: 100%;
+  margin-top: 2rem;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 6px 12px rgba(74, 111, 165, 0.2);
+}
+
+.pay-button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 16px rgba(74, 111, 165, 0.3);
+}
+
+.pay-button:active {
+  transform: translateY(1px);
+}
+
+.pay-button:disabled {
+  background: #cbd5e1;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.pay-button::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  transition: 0.5s;
+}
+
+.pay-button:hover::before {
+  left: 100%;
+}
+
+/* Loading & Spinner Styles */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 300px;
+  text-align: center;
+}
+
+.spinner-large {
+  width: 60px;
+  height: 60px;
+  border: 4px solid rgba(74, 111, 165, 0.1);
+  border-radius: 50%;
+  border-top-color: var(--primary-color);
+  animation: spin 1s ease-in-out infinite;
+  margin-bottom: 1rem;
+}
+
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: var(--light-text);
+  animation: spin 1s ease-in-out infinite;
+  display: inline-block;
+  margin-right: 10px;
+  vertical-align: middle;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Error Container Styles */
+.error-container {
+  background: #fee2e2;
+  border-left: 4px solid #ef4444;
+  padding: 1.5rem;
+  border-radius: var(--border-radius);
+  margin: 2rem 0;
+}
+
+.retry-button {
+  background: #ef4444;
+  color: white;
+  border: none;
+  border-radius: var(--border-radius);
+  padding: 0.75rem 1.5rem;
+  margin-top: 1rem;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.retry-button:hover {
+  background: #dc2626;
+}
+
+/* No Bookings Container */
+.no-bookings {
+  background: white;
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  padding: 3rem 2rem;
+  text-align: center;
+  margin: 2rem 0;
+}
+
+.no-bookings p {
+  font-size: 1.2rem;
+  color: #64748b;
+  margin-bottom: 1.5rem;
+}
+
+.action-button {
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: var(--border-radius);
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: var(--transition);
+  box-shadow: 0 4px 8px rgba(74, 111, 165, 0.2);
+}
+
+.action-button:hover {
+  background: var(--secondary-color);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(74, 111, 165, 0.3);
+}
+
+/* Payment Processor Container */
+.payment-processor-container {
+  max-width: 800px;
+  margin: 2rem auto;
+  background: white;
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  padding: 2rem;
+}
+
+
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .container {
+    padding: 0 10px;
+  }
+  
+  table, thead, tbody, th, td, tr {
+    display: block;
+  }
+  
+  thead tr {
+    position: absolute;
+    top: -9999px;
+    left: -9999px;
+  }
+  
+  tr {
+    margin-bottom: 15px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  
+  td {
+    border: none;
+    position: relative;
+    padding-left: 50%;
+    text-align: right;
+    border-bottom: 1px solid #e2e8f0;
+  }
+  
+  td:before {
+    position: absolute;
+    top: 50%;
+    left: 10px;
+    width: 45%;
+    padding-right: 10px;
+    white-space: nowrap;
+    font-weight: 600;
+    transform: translateY(-50%);
+    text-align: left;
+  }
+  
+  td:nth-of-type(1):before { content: "Booking Id"; }
+  td:nth-of-type(2):before { content: "Category"; }
+  td:nth-of-type(3):before { content: "Description"; }
+  td:nth-of-type(4):before { content: "Period"; }
+  td:nth-of-type(5):before { content: "Amount"; }
+  td:nth-of-type(6):before { content: "Action"; }
+  
+  .booking-table, .order-summary {
+    padding: 1rem;
+  }
+}
+
+/* Add these styles to your existing BookingPayment.css file */
+
+/* PDF download success indicator */
+.pdf-success {
+  background-color: #e8f5e9;
+  padding: 15px;
+  border-radius: 5px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.pdf-success p {
+  margin: 0;
+  color: #2e7d32;
+  font-weight: 500;
+}
+
+.download-link {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 16px;
+  background-color: #4caf50;
+  color: white;
+  border-radius: 4px;
+  text-decoration: none;
+  font-weight: 500;
+  transition: background-color 0.3s;
+}
+
+.download-link:hover {
+  background-color: #388e3c;
+}
+
+.download-link svg {
+  margin-right: 8px;
+}
+
+/* Email notification styles */
+.email-notification {
+  padding: 12px;
+  background-color: #e3f2fd;
+  border-radius: 5px;
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+}
+
+.email-notification p {
+  margin: 0;
+  color: #0d47a1;
+  font-size: 14px;
+}
+
+.email-notification svg {
+  color: #1976d2;
+  margin-right: 10px;
+}
+
+/* Responsive styles for mobile */
+@media screen and (max-width: 768px) {
+  .pdf-success {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .pdf-success p {
+    margin-bottom: 10px;
+  }
+  
+  .download-link {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* Additional styles for BookingPaymentProcessor */
+.form-group.email-field {
+  margin-top: 20px;
+  margin-bottom: 20px;
+  border-top: 1px solid #eee;
+  padding-top: 20px;
+}
+
+.form-group.email-field label {
+  display: flex;
+  align-items: center;
+}
+
+.form-group.email-field label svg {
+  margin-right: 8px;
+  color: #666;
+}
+
+.form-group.email-field input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+.form-group.email-field .email-hint {
+  font-size: 12px;
+  color: #666;
+  margin-top: 5px;
+}
+
+/* Success modal after payment */
+.payment-success-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.success-modal-content {
+  background-color: white;
+  padding: 30px;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  text-align: center;
+}
+
+.success-icon {
+  font-size: 50px;
+  color: #4caf50;
+  margin-bottom: 20px;
+}
+
+.success-modal-content h3 {
+  margin-top: 0;
+  color: #333;
+}
+
+.success-modal-content p {
+  color: #666;
+  margin-bottom: 20px;
+}
+
+.success-action-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+}
+
+.success-action-buttons button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s;
+}
+
+.download-button {
+  background-color: #2196f3;
+  color: white;
+}
+
+.download-button:hover {
+  background-color: #1976d2;
+}
+
+.continue-button {
+  background-color: #4caf50;
+  color: white;
+}
+
+.continue-button:hover {
+  background-color: #388e3c;
+}

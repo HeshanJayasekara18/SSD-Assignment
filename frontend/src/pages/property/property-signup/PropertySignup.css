@@ -1,0 +1,73 @@
+.mainDiv{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100vw;
+    height: 100vh;
+    gap: 20px;
+    background: linear-gradient(135deg, #e4ecf3, #f6f6f7, #e9edf0);
+}
+
+.mainForm{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+    padding: 25px;
+}
+
+.mainInput{
+    display: flex;
+    flex-direction: row;
+    gap: 30px;
+}
+
+.inputField{
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+
+.input {
+    width: 300px; 
+    height: 35px; 
+    border-radius: 8px; 
+    border: 2px solid #ccc; 
+    padding: 5px 10px; 
+    font-size: 16px; 
+}
+
+.email{
+    width: 660px;
+    height: 35px; 
+    border-radius: 8px; 
+    border: 2px solid #ccc; 
+    padding: 5px 10px; 
+    font-size: 16px; 
+}
+
+.des{
+    width: 635px;
+    height: 60px; 
+    border-radius: 8px; 
+    border: 2px solid #ccc; 
+    padding: 5px 10px; 
+    font-size: 14px; 
+}
+
+.submitBtn{
+    width: 660px;
+    height: 40px; 
+    border-radius: 8px; 
+    border: 2px solid #ccc; 
+    padding: 5px 10px; 
+    font-size: 16px; 
+    background-color: #3B41B6;
+    color: white;
+    margin-top: 10px;
+}
+
+label{
+    font-size: 14px;; 
+}

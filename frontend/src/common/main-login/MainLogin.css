@@ -1,0 +1,140 @@
+/* Reset Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Arial', sans-serif;
+  }
+  
+  /* Container */
+  .container-login {
+    display: flex;
+    height: 100vh;
+    background-color: #f3f4f6;
+  }
+  
+  /* Left Panel */
+  .left-panel-login {
+    width: 50%;
+    background-color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+  }
+  
+  .logo-login {
+    height: 200px;
+    margin-bottom: 1rem;
+  }
+  
+  .title-login {
+    font-size: 1.8rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+  }
+  
+  .subtitle-login {
+    color: gray;
+    margin-bottom: 1.5rem;
+  }
+  
+  .form-login {
+    width: 100%;
+    max-width: 350px;
+  }
+  
+  label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 5px;
+  }
+  
+  .inputLogin {
+    width: 100% !important;
+    padding: 10px  !important;
+    border: 1px solid #ccc !important;
+    border-radius: 5px !important;
+    margin-bottom: 15px !important;
+    outline: none !important;
+    height: 50px !important;
+  }
+  
+  inputLogin:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 5px rgba(37, 99, 235, 0.5);
+  }
+  
+  /* Buttons */
+  .button-login {
+    width: 100%;
+    background-color: #255cd4;
+    color: white;
+    padding: 12px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+  
+  .button-login:hover {
+    background-color: #1d4ed8;
+  }
+  
+  /* Divider */
+  .divider-login {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    max-width: 350px;
+    margin: 15px 0;
+  }
+  
+  .divider-line-login {
+    flex: 1;
+    height: 1px;
+    background-color: #ccc;
+  }
+  
+  .divider-text-login {
+    padding: 0 10px;
+    color: gray;
+  }
+  
+  /* Sign Up Buttons */
+  .signup-button-login {
+    width: 100%;
+    max-width: 350px;
+    background-color: #e5e7eb;
+    color: #374151;
+    padding: 12px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s;
+    margin-top: 10px;
+  }
+  
+  .signup-button-login:hover {
+    background-color: #d1d5db;
+  }
+  
+  /* Right Panel */
+  .right-panel-login {
+    width: 50%;
+    background-color: black;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-top-left-radius: 30px;
+    border-bottom-left-radius: 30px;
+    overflow: hidden;
+  }
+  
+  .right-panel-login img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  

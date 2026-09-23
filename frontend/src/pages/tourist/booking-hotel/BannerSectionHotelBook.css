@@ -1,0 +1,67 @@
+/* Banner section styles */
+.banner-container {
+    max-height: 400px;
+    position: relative;
+    background-size: cover;
+    background-position: center;
+    margin-top: 15px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    overflow: hidden;
+    font-family: 'Poppins', sans-serif;
+    max-width: 1400px;
+    margin: 0 auto;
+    
+  }
+  
+  .banner-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,0.1) 100%);
+  }
+  
+  .banner-content {
+    position: relative;
+    color: white;
+    padding: 30px;
+    max-width: 600px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  
+  .banner-content h1 {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+    font-weight: bold;
+    color: white;
+  }
+  
+  .banner-content p {
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+    color: white;
+  }
+  
+  .book-button {
+    width: fit-content;
+    height: 45px;
+    font-size: 16px;
+    border-radius: 4px;
+    background-color: #1890ff;
+    border: none;
+    font-weight: 500;
+  }
+  
+  .book-button:hover {
+    background-color: #40a9ff;
+  }
+  
+  
+  
+  

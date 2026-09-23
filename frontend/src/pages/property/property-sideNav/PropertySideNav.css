@@ -1,0 +1,54 @@
+.mainSideNav{
+    position: fixed;
+    top:0;
+    bottom: 0;
+    left: 0;
+    width:14rem;
+    height: 100vh;
+    z-index: 1000;
+    background-color:#EAF5FB;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+ .sideNavBody{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    
+}
+
+.sub2{
+    margin-top: 5rem;
+}
+
+button {
+    all: unset; /* Removes all default styles */
+    color: black; /* Sets the text color to black */
+    font-size: 16px; /* Adjust font size */
+    padding: 8px 16px; /* Adjust padding: vertical | horizontal */
+    cursor: pointer; /* Changes the cursor to a pointer on hover */
+    display: inline-block; /* Ensures the button behaves like an inline element */
+    background-color: transparent; /* Makes the background transparent */
+    border-radius: 5px; /* Rounded corners */
+    text-align: center; /* Centers the text inside the button */
+    opacity: 0.7;
+}
+
+button:hover {
+    background-color: #3312c5; /* Background color change on hover */
+    border-color: #888; /* Border color change on hover */
+    color: white;
+}
+
+.sideNavbtn{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.icons{
+    width: 18px;
+    height: 15px;
+}

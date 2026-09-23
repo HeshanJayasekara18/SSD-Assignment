@@ -1,0 +1,74 @@
+.main-vehcile-page{
+    padding: 20px;
+}
+
+.vehicle-card-property{
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.addVehicleNav{
+    position:relative;
+    width:80vw;
+    z-index: 1000;
+    background-color:white;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem;
+    margin-bottom: 20px;
+    border-radius: 7px;
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+
+}
+
+.dateText{
+    display: flex;
+    flex-direction: column;
+}
+
+.u1{
+    font-size: 15px;
+    font-weight:bolder; 
+}
+
+.u2{
+    font-size: 12px;
+    opacity: 0.7; 
+}
+
+.addVehicleBtn{
+    background-color: black !important;
+    color: white;
+}
+
+.line{
+    width: 2px;
+    height: 35px;
+    background-color: black;
+    opacity: 0.6;
+}
+
+.dataset{
+    display: flex;
+    flex-direction: row;
+    gap: 70px;
+    align-items: center;
+}
+
+.searchContainer {
+    margin: 20px 0;
+    text-align: right;
+  }
+  
+  .searchInput {
+    padding: 8px 12px;
+    width: 300px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+  }
+  
+ 

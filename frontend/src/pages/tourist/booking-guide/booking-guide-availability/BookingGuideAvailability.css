@@ -1,0 +1,225 @@
+.availability-container-h {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  font-family: 'Arial', sans-serif;
+  margin-top: 150px;
+}
+
+.availability-title-h {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.availability-content-h {
+  display: flex;
+  flex-direction: column;
+  gap: 70px;
+}
+
+@media (min-width: 768px) {
+  .availability-content-h {
+    flex-direction: row;
+  }
+}
+
+/* Guide Card Styles */
+.guide-card-h {
+  background-color: white;
+  padding: 16px;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .guide-card-h {
+    width: 220px;
+  }
+}
+
+.guide-image-h {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  border-radius: 6px;
+  margin-bottom: 12px;
+}
+
+.rating-h {
+  display: flex;
+  margin-bottom: 8px;
+}
+
+.star-h {
+  color: #FFD700;
+}
+
+.guide-name-h {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 4px 0;
+  color: #333;
+}
+
+.guide-price-h {
+  color: #2e8540;
+  font-weight: 500;
+  margin: 0 0 12px 0;
+}
+
+.guide-languages-h {
+  margin-bottom: 16px;
+}
+
+.language-label-h {
+  font-size: 14px;
+  color: #555;
+  font-weight: 500;
+  margin: 0;
+}
+
+.language-list-h {
+  font-size: 14px;
+  color: #333;
+  margin: 4px 0 0 0;
+}
+
+.view-profile-btn-h {
+  background-color: #3878d8;
+  color: #fdfdfd;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.view-profile-btn-h:hover {
+  background-color: #2cd862;
+}
+
+/* Calendar Styles */
+.calendar-container-h {
+  background-color: white;
+  padding: 16px;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  flex: 1;
+}
+
+.calendar-header-h {
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.select-text-h {
+  color: #666;
+  margin-bottom: 12px;
+}
+
+.month-navigation-h {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.current-month-h {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.month-buttons-h {
+  display: flex;
+  gap: 8px;
+}
+
+.month-nav-btn-h {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  background-color: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.month-nav-btn-h:hover {
+  background-color: #39e65b;
+}
+
+.calendar-grid-h {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.weekday-header-h {
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  color: #777;
+}
+
+.calendar-day-h {
+  height: 32px;
+  width: 32px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.calendar-day-h:not(.empty-h):hover {
+  background-color: #56dd24;
+}
+
+.calendar-day-h.selected-h {
+  background-color: #ef4f4f8f;
+  color: white;
+}
+
+.calendar-day-h.empty-h {
+  cursor: default;
+}
+
+/* Action Button Styles */
+.action-buttons-h {
+  margin-top: 24px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.next-btn-h {
+  background-color: #3366cc;
+  color: white;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.next-btn-h:hover {
+  background-color: #2855a6;
+}

@@ -1,0 +1,113 @@
+.MainVehicleForm {
+  width: 80%;
+  max-width: 800px;
+  margin: 20px auto;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+  overflow: hidden;
+}
+
+.VehicleFormHeader {
+  background-color: #4a90e2;
+  color: white;
+  padding: 15px 20px;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+}
+
+.VehicleFormHeader h4 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.VformBody {
+  padding: 20px;
+}
+
+.formInputSet {
+  display: flex;
+  flex-wrap: wrap;
+  margin-bottom: 15px;
+  align-items: center;
+}
+
+.formInputSet label {
+  width: 120px;
+  font-size: 14px;
+  margin-right: 10px;
+  color: #333;
+}
+
+.VInput {
+  flex: 1;
+  min-width: 150px;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin-right: 15px;
+  font-size: 14px;
+}
+
+.VInput[type="file"] {
+  padding: 6px;
+}
+
+.VInput:focus {
+  outline: none;
+  border-color: #4a90e2;
+  box-shadow: 0 0 3px rgba(74, 144, 226, 0.3);
+}
+
+.Vbtn {
+  display: flex;
+  justify-content: center;
+  padding: 10px 20px 20px;
+}
+
+.Vbtn button {
+  background-color: #4a90e2;
+  color: white;
+  border: none;
+  padding: 10px 25px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 500;
+  transition: background-color 0.3s;
+}
+
+.Vbtn button:hover {
+  background-color: #3672b9;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .MainVehicleForm {
+      width: 95%;
+  }
+  
+  .formInputSet {
+      flex-direction: column;
+      align-items: flex-start;
+  }
+  
+  .formInputSet label {
+      width: 100%;
+      margin-bottom: 5px;
+  }
+  
+  .VInput {
+      width: 100%;
+      margin-right: 0;
+      margin-bottom: 10px;
+  }
+}
+
+.error {
+  color: red;
+  font-size: 5px;
+  margin-top: 4px;
+}
+

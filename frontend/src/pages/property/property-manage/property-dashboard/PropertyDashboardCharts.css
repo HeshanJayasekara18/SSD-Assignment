@@ -1,0 +1,56 @@
+.t-chart-modal-container {
+  background: #ffffff;
+  padding: 2rem;
+  border-radius: 1.5rem;
+  box-shadow: 0px 6px 20px rgba(0, 0, 0, 0.1);
+  width: 90%;
+  max-width: 800px;
+  margin: auto;
+  text-align: center;
+}
+
+.t-chart-title {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #4f46e5;
+  margin-bottom: 2rem;
+}
+
+.t-chart-grid {
+  display: flex;
+  justify-content: center;
+  gap: 3rem;
+  margin-bottom: 2rem;
+}
+
+.t-chart-stats {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 2rem;
+}
+
+.t-stat-box h3 {
+  font-size: 2rem;
+  color: #10b981;
+  margin-bottom: 0.2rem;
+}
+
+.t-stat-box p {
+  color: #6b7280;
+  font-size: 1rem;
+}
+
+.t-manage-button button {
+  background: linear-gradient(135deg, #4f46e5, #6366f1);
+  color: white;
+  padding: 0.8rem 2rem;
+  border: none;
+  border-radius: 1rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.t-manage-button button:hover {
+  background: linear-gradient(135deg, #4338ca, #6366f1);
+}

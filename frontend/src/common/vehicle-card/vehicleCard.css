@@ -1,0 +1,68 @@
+.main-vehicle-card{
+    width: 17vw;
+    height: 58vh;
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+    border-radius: 10px;
+    padding: 13px;
+    display: flex;
+    flex-direction: column;
+    gap:20px;
+    
+}
+.image{
+    width: 15vw;
+    height: 25vh;
+    border-radius: 5px;
+}
+
+.vehicle-details{
+    display: flex;
+    flex-direction: column;
+    gap:7px;
+    
+}
+.vehicle-features{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    
+}
+.vehicle-features-set{
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+.vehicle-features-item{
+    display: flex;
+    flex-direction: row;
+   
+    align-items: center;
+    gap: 5px;
+}
+.vicon{
+    width: 20px;
+    height: 17px;
+}
+.vbtnDiv{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.VeditBtn{
+    width: 65px;
+    height: 13px;
+    color: white;
+    background-color: rgb(228, 84, 27);
+    font-size: 12px;
+
+}
+
+.VdeleteBtn{
+    width: 65px;
+    height: 13px;
+    color: white;
+    background-color:red;
+    font-size: 12px;
+}

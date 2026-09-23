@@ -1,0 +1,127 @@
+.feedback-section {
+    background-color: #3498db;
+    padding: 60px 20px;
+    text-align: center;
+    margin-top: 30px;
+  }
+  
+  .feedback-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 20px; /* This adds the small gap on the left and right */
+  }
+  
+  .feedback-section h2 {
+    color: white;
+    font-size: 36px;
+    margin-bottom: 15px;
+    font-weight: 600;
+  }
+  
+  .feedback-section p {
+    color: white;
+    font-size: 18px;
+    margin-bottom: 30px;
+  }
+  
+  .feedback-button {
+    background-color: #6c7a89;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 28px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .feedback-button:hover {
+    background-color: #556370;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  }
+  
+  .feedback-button:active {
+    transform: translateY(0);
+  }
+  
+  /* Modal styles */
+  .feedback-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+  
+  .feedback-modal {
+    background-color: white;
+    border-radius: 10px;
+    padding: 30px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    position: relative;
+  }
+  
+  .close-button {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 24px;
+    cursor: pointer;
+    color: #999;
+  }
+  
+  .close-button:hover {
+    color: #333;
+  }
+  
+  .feedback-modal h3 {
+    margin-top: 0;
+    color: #333;
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+  
+  .feedback-modal textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    resize: vertical;
+    font-family: inherit;
+    margin-bottom: 20px;
+    box-sizing: border-box;
+  }
+  
+  .submit-button {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 10px 24px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .submit-button:hover {
+    background-color: #2980b9;
+  }
+  
+  .success-message {
+    color: #2ecc71;
+    font-size: 18px;
+    padding: 15px;
+    border-radius: 6px;
+    background-color: #eafaf1;
+    text-align: center;
+  }

@@ -1,0 +1,124 @@
+/* BookingVehicleForm.css */
+
+.MuiDialog-paper {
+    overflow-y: visible !important;
+  }
+  
+  .vehicle-form-title {
+    background-color: #1976d2;
+    color: white;
+    padding: 16px;
+    border-radius: 8px 8px 0 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .vehicle-summary {
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 24px;
+  }
+  
+  .vehicle-summary-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  
+  .vehicle-name {
+    color: #1976d2;
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+  
+  .price-display {
+    font-weight: bold;
+  }
+  
+  .vehicle-features {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-top: 8px;
+  }
+  
+  .vehicle-feature {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.875rem;
+  }
+  
+  .booking-summary {
+    background-color: #e3f2fd;
+    border-radius: 4px;
+    padding: 8px;
+    margin-top: 16px;
+  }
+  
+  .summary-row {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 8px;
+  }
+  
+  .price-note {
+    margin-top: 16px;
+    color: #666;
+    font-size: 0.875rem;
+  }
+  
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  
+  @media (max-width: 960px) {
+    .form-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .vehicle-features {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  
+  .form-actions {
+    background-color: #f5f5f5;
+    padding: 16px;
+    border-radius: 0 0 8px 8px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 16px;
+  }
+  
+  .book-button {
+    background-color: #1976d2;
+    color: white;
+  }
+  
+  .cancel-button {
+    border: 1px solid #f44336;
+    color: #f44336;
+  }
+  
+  /* Input styling */
+  .input-with-icon .MuiInputAdornment-root {
+    margin-right: 8px;
+  }
+  
+  /* DatePicker styling */
+  .date-picker .MuiInputAdornment-root {
+    margin-right: 8px;
+  }
+  
+  /* Error messages */
+  .error-text {
+    color: #f44336;
+    font-size: 0.75rem;
+    margin-top: 4px;
+  }

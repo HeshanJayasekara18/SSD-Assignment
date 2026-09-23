@@ -1,0 +1,138 @@
+/* FeedbackDisplay.css */
+.feedback-display-container-r {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+  }
+  
+  .feedback-display-title-r {
+    color: #2c3e50;
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 28px;
+  }
+  
+  .loading-r, .error-r, .no-feedbacks-r {
+    text-align: center;
+    padding: 20px;
+    border-radius: 8px;
+    background-color: #f8f9fa;
+    margin: 20px 0;
+  }
+  
+  .error-r {
+    color: #d9534f;
+    border: 1px solid #f5c6cb;
+    background-color: #f8d7da;
+  }
+  
+  .no-feedbacks-r {
+    color: #666;
+    font-style: italic;
+  }
+  
+  .feedback-card-r {
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-bottom: 20px;
+    transition: transform 0.2s ease;
+  }
+  
+  .feedback-card-r:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  }
+  
+  .feedback-header-r {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eaeaea;
+  }
+  
+  .service-type-r {
+    font-size: 20px;
+    color: #3498db;
+    margin: 0;
+  }
+  
+  .feedback-date-r {
+    color: #7f8c8d;
+    font-size: 14px;
+  }
+  
+  .rating-display-r {
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+  }
+  
+  .star-r {
+    font-size: 24px;
+    margin-right: 2px;
+  }
+  
+  .filled-r {
+    color: #f1c40f;
+  }
+  
+  .empty-r {
+    color: #e0e0e0;
+  }
+  
+  .rating-text-r {
+    margin-left: 10px;
+    color: #555;
+    font-size: 16px;
+  }
+  
+  .section-title-r {
+    font-size: 16px;
+    color: #2c3e50;
+    margin-bottom: 8px;
+  }
+  
+  .comment-section-r, .response-section-r {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #eaeaea;
+  }
+  
+  .comment-text-r, .response-text-r {
+    color: #333;
+    line-height: 1.5;
+    font-size: 15px;
+  }
+  
+  .pending-response-r {
+    color: #95a5a6;
+    font-style: italic;
+  }
+  
+  /* Responsive design */
+  @media (max-width: 768px) {
+    .feedback-display-container-r {
+      padding: 15px;
+    }
+    
+    .feedback-card-r {
+      padding: 15px;
+    }
+    
+    .feedback-display-title-r {
+      font-size: 24px;
+    }
+    
+    .service-type-r {
+      font-size: 18px;
+    }
+    
+    .star-r {
+      font-size: 20px;
+    }
+  }

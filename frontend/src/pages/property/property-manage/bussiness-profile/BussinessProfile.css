@@ -1,0 +1,71 @@
+.profileMainDiv{
+    display: flex;
+    flex-direction: column;
+
+    width: 100vw;
+    height: 100vh;
+    gap: 20px;
+}
+
+.profileMainForm{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  
+    padding: 25px;
+}
+
+.mainInput{
+    display: flex;
+    flex-direction: row;
+    gap: 30px;
+}
+
+.inputField{
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+
+.input {
+    width: 300px; 
+    height: 35px; 
+    border-radius: 8px; 
+    border: 2px solid #ccc; 
+    padding: 5px 10px; 
+    font-size: 16px; 
+}
+
+.email{
+    width: 660px;
+    height: 35px; 
+    border-radius: 8px; 
+    border: 2px solid #ccc; 
+    padding: 5px 10px; 
+    font-size: 16px; 
+}
+
+.des{
+    width: 635px;
+    height: 60px; 
+    border-radius: 8px; 
+    border: 2px solid #ccc; 
+    padding: 5px 10px; 
+    font-size: 14px; 
+}
+
+.updateBtn{
+    width: 610px;
+    height: 30px; 
+    border-radius: 8px; 
+    border: 2px solid #ccc; 
+    padding: 5px 10px; 
+    font-size: 16px; 
+    background-color: #3B41B6;
+    color: white;
+    margin-top: 10px;
+}
+
+label{
+    font-size: 14px;; 
+}
