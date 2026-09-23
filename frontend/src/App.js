@@ -51,6 +51,8 @@ import TouristFeedbackDisplay from './common/feedback-rating/feedback-display/To
 import Gallary from './pages/landing/gallary/Gallary'
 
 import LandingAfterLogin from './pages/tourist/landing-after-login/LandingAfterLogin';
+import PaymentSuccess from './pages/payment-result/PaymentSuccess';
+import PaymentCancelled from './pages/payment-result/PaymentCancelled';
 function App() {
   return (
     
@@ -59,6 +61,8 @@ function App() {
             <Route path="/tourist-signup" element={<TouristSignup/>}/>
             <Route path="/property-signup" element={<PropertySignup/>}/>
             <Route path="/login" element={<MainLogin/>}/>
+            <Route path="/payment-success" element={<PaymentSuccess/>}/>
+            <Route path="/payment-cancelled" element={<PaymentCancelled/>}/>
             <Route path="/" element={<LandingPages/>}/>
             <Route path='/tourguide-signup' element={<TourGuideSignUp/>}/>
 

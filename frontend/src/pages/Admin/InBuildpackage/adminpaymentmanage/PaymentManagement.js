@@ -62,7 +62,12 @@ const PaymentManagement = () => {
   const fetchPayments = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch('http://localhost:4000/api/payment/all');
+      const token = localStorage.getItem('token');
+      const response = await fetch('http://localhost:4000/api/payment/all', {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
       
       if (!response.ok) {
         throw new Error('Failed to fetch payment data');
@@ -73,15 +78,18 @@ const PaymentManagement = () => {
         const formattedPayments = data.payments.map(payment => ({
           id: payment.paymentId,
           bookingId: payment.packageId,
-          customerName: payment.fullName,
+          customerName: payment.customerName || 'Customer',
           tourPackage: payment.tourPackageName || 'Unknown Package',
-          amount: payment.totalAmount,
+          amount: payment.amount,
+          currency: payment.currency || 'usd',
           date: payment.createdAt,
           status: payment.status.toLowerCase(),
-          paymentMethod: 'card',
+          paymentMethod: payment.cardBrand && payment.cardLast4 ? `${payment.cardBrand} **** ${payment.cardLast4}` : 'Stripe Checkout',
+          cardBrand: payment.cardBrand,
+          cardLast4: payment.cardLast4,
           transactionId: payment.transactionId,
-          email: payment.email,
-          phone: payment.phone,
+          email: payment.email || '',
+          phone: payment.phone || '',
           numberOfTravelers: payment.numberOfTravelers
         }));
         
@@ -163,8 +171,12 @@ const PaymentManagement = () => {
   const deletePayment = async (paymentId) => {
     if (window.confirm('Are you sure you want to delete this payment? This action cannot be undone.')) {
       try {
+        const token = localStorage.getItem('token');
         const response = await fetch(`http://localhost:4000/api/payment/${paymentId}`, {
           method: 'DELETE',
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
         });
         
         if (!response.ok) {
@@ -207,7 +219,7 @@ const PaymentManagement = () => {
         payment.bookingId.toLowerCase().includes(term) ||
         payment.customerName.toLowerCase().includes(term) ||
         payment.tourPackage.toLowerCase().includes(term) ||
-        payment.transactionId.toLowerCase().includes(term)
+        (payment.transactionId || '').toLowerCase().includes(term)
       );
     }
     
@@ -305,11 +317,11 @@ const PaymentManagement = () => {
       { label: 'Phone:', value: payment.phone },
       { label: 'Tour Package:', value: payment.tourPackage },
       { label: 'Package ID:', value: payment.bookingId },
-      { label: 'Number of Travelers:', value: payment.numberOfTravelers.toString() },
+      { label: 'Number of Travelers:', value: (payment.numberOfTravelers || 'N/A').toString() },
       { label: 'Amount:', value: `$${payment.amount.toFixed(2)}` },
       { label: 'Date:', value: formatDate(payment.date) },
       { label: 'Status:', value: payment.status.charAt(0).toUpperCase() + payment.status.slice(1) },
-      { label: 'Payment Method:', value: 'Credit/Debit Card' },
+      { label: 'Payment Method:', value: payment.paymentMethod },
     ];
 
     details.forEach(detail => {
@@ -635,7 +647,7 @@ const PaymentManagement = () => {
               </div>
               <div className="detail-row">
                 <div className="detail-label"><FiCreditCard className="detail-icon" /> Payment Method:</div>
-                <div className="detail-value">Credit/Debit Card</div>
+                <div className="detail-value">{selectedPayment.paymentMethod}</div>
               </div>
             </div>
             <div className="modal-footer">
