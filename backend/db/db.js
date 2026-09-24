@@ -16,7 +16,7 @@ const connectDB = async () => {
     console.error(`MongoDB Connection Error: ${error.message}`);
     process.exit(1); // Stop app if DB connection fails
   }
-};+
+};
 
 // Import models here
 require("../model/Booking");
