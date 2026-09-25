@@ -61,6 +61,8 @@ function App() {
             <Route path="/tourist-signup" element={<TouristSignup/>}/>
             <Route path="/property-signup" element={<PropertySignup/>}/>
             <Route path="/login" element={<MainLogin/>}/>
+            <Route path="/payment-success" element={<PaymentSuccess/>}/>
+            <Route path="/payment-cancelled" element={<PaymentCancelled/>}/>
             <Route path="/" element={<LandingPages/>}/>
             <Route path='/tourguide-signup' element={<TourGuideSignUp/>}/>
 
