@@ -4,6 +4,8 @@ import './TouristSignup.css';
 import { CountryCodes } from './CountryCodes';
 import { FaGoogle, FaFacebook } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
+import { GoogleLogin } from '@react-oauth/google';
+import { useNavigate } from 'react-router-dom'; // Add this if it's not already there
 
 import Logo from  "../../../images/h-Logo.png";
 import BodySideimg from "../../../images/body-sideimg.jpg";
@@ -20,6 +22,30 @@ const TouristSignup = () => {
   });
 
   const [errors, setErrors] = useState({});
+
+  const navigate = useNavigate();
+
+  const handleGoogleSuccess = async (credentialResponse) => {
+    try {
+      // Sending the token to the same endpoint as Login
+      // Your backend should verify the token and create a user if they don't exist
+      const response = await axios.post('http://localhost:4000/api/auth/google/tourist', {
+        token: credentialResponse.credential
+      });
+
+      if (response.status === 200 || response.status === 201) {
+        console.log('Google Auth successful:', response.data);
+        localStorage.setItem("userID", response.data.userDetails.userID);
+        localStorage.setItem("touristID", response.data.touristDetails.touristID);
+        localStorage.setItem("fullname", response.data.touristDetails.fullname);
+        navigate('/Tourist');
+      }
+    } catch (error) {
+      console.error('Google Auth Error:', error);
+      alert(error.response?.data?.message || 'Google Auth failed!');
+    }
+  };
+
   const [touched, setTouched] = useState({});
 
   const handleChange = (e) => {
@@ -227,24 +253,18 @@ const TouristSignup = () => {
             <span>or</span>
           </div>
           
-          {/* <div className="social-buttons-h">
-            <button 
-              type="button" 
-              className="social-button-h google-h"
-              onClick={() => handleSocialSignup('Google')}
-            >
-              <FaGoogle className="social-icon-h" />
-              Sign up with Google
-            </button>
-            <button 
-              type="button" 
-              className="social-button-h facebook-h"
-              onClick={() => handleSocialSignup('Facebook')}
-            >
-              <FaFacebook className="social-icon-h" />
-              Sign up with Facebook
-            </button>
-          </div> */}
+          <div className="divider-h">
+            <span>or</span>
+          </div>
+          
+          {/* Replaced commented out buttons with actual GoogleLogin component */}
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '20px' }}>
+            <GoogleLogin
+              onSuccess={handleGoogleSuccess}
+              onError={() => alert('Google Signup Failed')}
+              text="signup_with" // Changes the button text to "Sign up with Google"
+            />
+          </div>
           
           <div className="login-link-h">
             Already have an account? <Link to="/login">Sign in</Link>

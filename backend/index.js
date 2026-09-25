@@ -23,6 +23,7 @@ const FeedbackRoute = require('./route/FeedbackRoute');
 const GuideDetails = require('./route/GuideDetails');
 const ChatRoute = require('./route/ChatRoute');
 const ApiEmail = require('./route/ApiEmail'); // ✅ fixed here
+const GoogleAuthRoute = require('./route/GoogleAuthRoute');
 
 dotenv.config();
 
@@ -56,6 +57,7 @@ app.use('/api/GuideDetails', GuideDetails);
 app.use('/api/feedback', FeedbackRoute);
 app.use('/uploads', express.static('uploads'));
 app.use('/api/chat', ChatRoute);
+app.use('/api/auth/google', GoogleAuthRoute);
 
 // Root Route
 app.get("/", (req, res) => {
