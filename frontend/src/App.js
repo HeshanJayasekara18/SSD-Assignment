@@ -1,3 +1,4 @@
+import { GoogleOAuthProvider } from '@react-oauth/google';
 import logo from './logo.svg';
 import './App.css';
 import 'leaflet/dist/leaflet.css';
@@ -51,20 +52,20 @@ import TouristFeedbackDisplay from './common/feedback-rating/feedback-display/To
 import Gallary from './pages/landing/gallary/Gallary'
 
 import LandingAfterLogin from './pages/tourist/landing-after-login/LandingAfterLogin';
+
 function App() {
   return (
-    
+    <GoogleOAuthProvider clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID}>
         <BrowserRouter>
           <Routes>
             <Route path="/tourist-signup" element={<TouristSignup/>}/>
             <Route path="/property-signup" element={<PropertySignup/>}/>
             <Route path="/login" element={<MainLogin/>}/>
+            <Route path="/payment-success" element={<PaymentSuccess/>}/>
+            <Route path="/payment-cancelled" element={<PaymentCancelled/>}/>
             <Route path="/" element={<LandingPages/>}/>
             <Route path='/tourguide-signup' element={<TourGuideSignUp/>}/>
 
-            
-            
-            
             <Route
                path='/admin'
                element={<Admin/>}>
@@ -75,8 +76,6 @@ function App() {
                 <Route path='Receipt' element={<Receipt/>}/>
                 <Route path='PaymentManagement' element={<PaymentManagement/>}/>
                 <Route path='feedback-manage' element={<FeedbackManagement/>}/>
-
-               
             </Route>
 
             <Route
@@ -112,19 +111,15 @@ function App() {
                 <Route path='gallary' element={<Gallary/>}/>
             </Route>
             
-            
-
              <Route
                 path='/TourGuide'
                 element={<TourGuide/>}>
                 <Route index element={<TourGuideDashboard/>}/>
                  <Route path='profile' element={<TourGuideProfile/>}/>
               </Route>
-            
-          
           </Routes>
         </BrowserRouter>
-  
+    </GoogleOAuthProvider>
   )
 }
 

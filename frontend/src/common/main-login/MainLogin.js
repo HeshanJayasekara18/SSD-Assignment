@@ -4,20 +4,35 @@ import hlogo from '../../images/h-Logo.png';
 import hloginimg from '../../images/h-Login-img.jpeg'; 
 import { useNavigate } from "react-router-dom";
 import axios from 'axios';
+import { GoogleLogin } from '@react-oauth/google';
 
 const MainLogin = () => {
   const navigate = useNavigate();
+
+  const handleGoogleSuccess = async (credentialResponse) => {
+    try {
+      const response = await axios.post('http://localhost:4000/api/auth/google/tourist', {
+        token: credentialResponse.credential
+      });
+
+      if (response.status === 200) {
+        console.log('Google Login successful:', response.data);
+        localStorage.setItem("userID", response.data.userDetails.userID);
+        localStorage.setItem("touristID", response.data.touristDetails.touristID);
+        localStorage.setItem("fullname", response.data.touristDetails.fullname);
+        navigate('/Tourist');
+      }
+    } catch (error) {
+      console.error('Google Auth Error:', error);
+      alert(error.response?.data?.message || 'Google Auth failed!');
+    }
+  };
 
   // State for form inputs
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const onSubmitLogin = () => {
-
-    if(email === "admin@gmail.com" || password === "admin123") {
-     navigate('/admin');
-      return;
-    } 
 
     const loginData = {
       email: email,
@@ -27,7 +42,15 @@ const MainLogin = () => {
     axios.post('http://localhost:4000/api/login', loginData)
       .then(response => {       
         console.log('Login successful:', response.data);
-       
+        if (response.data.token) {
+          localStorage.setItem("token", response.data.token);
+        }
+
+        if (response.data.userDetails.role === 'Admin') {
+          navigate('/admin');
+          localStorage.setItem("userID", response.data.userDetails.userID);
+          return;
+        }
 
         if (response.data.userDetails.role === 'Bussiness') {
           navigate('/property');
@@ -108,6 +131,13 @@ const MainLogin = () => {
           <div className="divider-line-login"></div>
           <span className="divider-text-login">or</span>
           <div className="divider-line-login"></div>
+        </div>
+
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '20px' }}>
+          <GoogleLogin
+            onSuccess={handleGoogleSuccess}
+            onError={() => alert('Google Login Failed')}
+          />
         </div>
 
         {/* Sign Up Buttons */}

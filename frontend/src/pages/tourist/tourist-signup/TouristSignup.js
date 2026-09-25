@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios'; // ADD THIS
 import './TouristSignup.css';
 import { CountryCodes } from './CountryCodes';
-import { FaGoogle, FaFacebook } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
+import { GoogleLogin } from '@react-oauth/google';
+import { useNavigate } from 'react-router-dom'; // Add this if it's not already there
 
 import Logo from  "../../../images/h-Logo.png";
 import BodySideimg from "../../../images/body-sideimg.jpg";
@@ -20,6 +21,30 @@ const TouristSignup = () => {
   });
 
   const [errors, setErrors] = useState({});
+
+  const navigate = useNavigate();
+
+  const handleGoogleSuccess = async (credentialResponse) => {
+    try {
+      // Sending the token to the same endpoint as Login
+      // Your backend should verify the token and create a user if they don't exist
+      const response = await axios.post('http://localhost:4000/api/auth/google/tourist', {
+        token: credentialResponse.credential
+      });
+
+      if (response.status === 200 || response.status === 201) {
+        console.log('Google Auth successful:', response.data);
+        localStorage.setItem("userID", response.data.userDetails.userID);
+        localStorage.setItem("touristID", response.data.touristDetails.touristID);
+        localStorage.setItem("fullname", response.data.touristDetails.fullname);
+        navigate('/Tourist');
+      }
+    } catch (error) {
+      console.error('Google Auth Error:', error);
+      alert(error.response?.data?.message || 'Google Auth failed!');
+    }
+  };
+
   const [touched, setTouched] = useState({});
 
   const handleChange = (e) => {
@@ -37,32 +62,33 @@ const TouristSignup = () => {
     });
   };
 
-  useEffect(() => {
-    validateForm();
-  }, [formData, touched]);
-
-  const validateForm = () => {
+  const validateForm = useCallback((touchedFields = touched) => {
     const newErrors = {};
-    if (touched.fullName && !formData.fullName.trim()) newErrors.fullName = 'Full name is required';
-    if (touched.phoneNumber && formData.phoneNumber && !/^\d{6,15}$/.test(formData.phoneNumber)) newErrors.phoneNumber = 'Valid phone number required';
-    if (touched.country && !formData.country) newErrors.country = 'Country is required';
-    if (touched.email) {
+    if (touchedFields.fullName && !formData.fullName.trim()) newErrors.fullName = 'Full name is required';
+    if (touchedFields.phoneNumber && formData.phoneNumber && !/^\d{6,15}$/.test(formData.phoneNumber)) newErrors.phoneNumber = 'Valid phone number required';
+    if (touchedFields.country && !formData.country) newErrors.country = 'Country is required';
+    if (touchedFields.email) {
       if (!formData.email) newErrors.email = 'Email is required';
       else if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = 'Valid email required';
     }
-    if (touched.password && (!formData.password || formData.password.length < 8)) newErrors.password = 'Min 8 characters';
-    if (touched.reEnterPassword && formData.password !== formData.reEnterPassword) newErrors.reEnterPassword = 'Passwords do not match';
+    if (touchedFields.password && (!formData.password || formData.password.length < 8)) newErrors.password = 'Min 8 characters';
+    if (touchedFields.reEnterPassword && formData.password !== formData.reEnterPassword) newErrors.reEnterPassword = 'Passwords do not match';
     setErrors(newErrors);
-  };
+    return newErrors;
+  }, [formData, touched]);
+
+  useEffect(() => {
+    validateForm();
+  }, [validateForm]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const allTouched = {};
     Object.keys(formData).forEach(key => allTouched[key] = true);
     setTouched(allTouched);
-    validateForm();
+    const validationErrors = validateForm(allTouched);
   
-    const hasErrors = Object.keys(errors).length > 0;
+    const hasErrors = Object.keys(validationErrors).length > 0;
     if (!hasErrors) {
       try {
         const fullPhone = formData.countryCode + formData.phoneNumber;
@@ -129,7 +155,7 @@ const TouristSignup = () => {
               <select
                 className="country-code-select-h"
                 name="countryCode"
-                value={formData.CountryCode}
+                value={formData.countryCode}
                 onChange={handleChange}
               >
                 {CountryCodes.map(country => (
@@ -227,24 +253,18 @@ const TouristSignup = () => {
             <span>or</span>
           </div>
           
-          {/* <div className="social-buttons-h">
-            <button 
-              type="button" 
-              className="social-button-h google-h"
-              onClick={() => handleSocialSignup('Google')}
-            >
-              <FaGoogle className="social-icon-h" />
-              Sign up with Google
-            </button>
-            <button 
-              type="button" 
-              className="social-button-h facebook-h"
-              onClick={() => handleSocialSignup('Facebook')}
-            >
-              <FaFacebook className="social-icon-h" />
-              Sign up with Facebook
-            </button>
-          </div> */}
+          <div className="divider-h">
+            <span>or</span>
+          </div>
+          
+          {/* Replaced commented out buttons with actual GoogleLogin component */}
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '20px' }}>
+            <GoogleLogin
+              onSuccess={handleGoogleSuccess}
+              onError={() => alert('Google Signup Failed')}
+              text="signup_with" // Changes the button text to "Sign up with Google"
+            />
+          </div>
           
           <div className="login-link-h">
             Already have an account? <Link to="/login">Sign in</Link>
