@@ -164,6 +164,7 @@ const createCheckoutSession = async (req, res) => {
       payment: safePaymentResponse(payment)
     });
   } catch (error) {
+    console.error('createCheckoutSession failed:', error);
     res.status(500).json({ success: false, message: 'Unable to create checkout session' });
   }
 };
