@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import axios from "axios";
 import "./PropertySideNav.css";
 import logo from '../../../images/logo.png'; 
 import v1 from '../../../images/v1.png'; 
@@ -37,9 +38,23 @@ function PropertySideNav() {
         navigate('/property/profile');
     }
 
-    const onLogOut = () => {
-        navigate('/login');
-    }
+    const onLogOut = async () => {
+        try {
+            await axios.post(
+                "http://localhost:4000/api/Login/logout"
+            );
+
+            localStorage.removeItem("userID");
+            localStorage.removeItem("businessName");
+            localStorage.removeItem("bussinessType");
+            localStorage.removeItem("businessID");
+
+            navigate("/login");
+
+        } catch (error) {
+            console.error("Logout failed");
+        }
+    };
 
     const onClickChat=()=>{
         navigate('/property/chat');

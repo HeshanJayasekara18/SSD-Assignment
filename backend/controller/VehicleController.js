@@ -1,5 +1,27 @@
 const Vehicle = require ('../model/Vehicle');
 
+// Security: only these fields may be written from a request body.
+const VEHICLE_WRITABLE_FIELDS = [
+    'modelName',
+    'seats',
+    'fuelType',
+    'transmission',
+    'doors',
+    'status',
+    'priceDay',
+    'priceMonth'
+];
+
+const pickVehicleFields = (source) => {
+    const result = {};
+    VEHICLE_WRITABLE_FIELDS.forEach((field) => {
+        if (source[field] !== undefined) {
+            result[field] = source[field];
+        }
+    });
+    return result;
+};
+
 
 
 const getVehicle = async (req, res) => {
@@ -53,8 +75,10 @@ const addVehicle = async (req, res) => {
 
 const updateVehicle = async (req, res) => {
     try {
-        const { id } = req.params; 
-        const updateData = { ...req.body };
+        const { id } = req.params;
+        // Security: whitelist writable fields so V_Id / B_Id / userId ownership
+        // cannot be reassigned by adding them to the request body.
+        const updateData = pickVehicleFields(req.body);
 
      
         if (req.file) {

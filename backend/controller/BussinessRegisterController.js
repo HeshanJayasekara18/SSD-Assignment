@@ -2,6 +2,8 @@ const bcrypt = require("bcrypt");
 const User = require('../model/User');
 const Bussiness = require('../model/Bussiness'); 
 const BussinessAgent = require('../model/BussinessAgent');
+const generateToken = require("../utils/generateToken");
+const setAuthCookie = require("../utils/setAuthCookie");
 
 
 const register = async (req, res) => {
@@ -22,19 +24,21 @@ const register = async (req, res) => {
         );
 
         // Create User
-        const newUser = new User({
+        // Security: role is fixed by the endpoint, never read from req.body, so a
+        // client cannot self-register as Admin.
+        const newUser = await User.create({
             username: req.body.email,
             password: hashedPassword,
-            role: req.body.role,
+            role: 'Bussiness',
             email: req.body.email
         });
-        
+
         // Create Business Agent
         const businessAgent = await BussinessAgent.create({
             fullname: req.body.fullName, // Corrected property name
             userAddress: req.body.userAddress, // Mapped correctly from frontend
             contact: req.body.contact,
-            userID: user.userID // Use MongoDB's default _id
+            userID: newUser.userID
         });
 
         // Create Business
@@ -116,6 +120,9 @@ const loginBussiness = async (req, res) => {
         if (!isMatch) {
             return res.status(401).json({ message: "Invalid email or password" });
         }
+
+        const token = generateToken(user);
+        setAuthCookie(res, token);
 
         res.status(200).json({ 
             message: "Login successful", 
