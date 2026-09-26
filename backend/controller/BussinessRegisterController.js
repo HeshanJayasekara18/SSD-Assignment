@@ -1,3 +1,4 @@
+const bcrypt = require("bcrypt");
 const User = require('../model/User');
 const Bussiness = require('../model/Bussiness'); 
 const BussinessAgent = require('../model/BussinessAgent');
@@ -12,14 +13,22 @@ const register = async (req, res) => {
             return res.status(400).json({ message: "Email is already registered. Please use a different email." });
         }
 
+        
+        const saltRounds = 12;
+
+        const hashedPassword = await bcrypt.hash(
+            req.body.password,
+            saltRounds
+        );
+
         // Create User
-        const user = await User.create({          
+        const newUser = new User({
             username: req.body.email,
-            password: req.body.password, 
+            password: hashedPassword,
             role: req.body.role,
             email: req.body.email
         });
-
+        
         // Create Business Agent
         const businessAgent = await BussinessAgent.create({
             fullname: req.body.fullName, // Corrected property name

@@ -1,6 +1,6 @@
+const bcrypt = require("bcrypt");
 const TourGuide = require('../model/TourGuide');
 const User = require('../model/User');
-const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 exports.registerTourGuide = async (req, res) => {
@@ -14,18 +14,15 @@ exports.registerTourGuide = async (req, res) => {
       return res.status(400).json({ message: 'User with this email already exists' });
     }
 
-    // Hash password before saving
-    //const hashedPassword = await bcrypt.hash(password, 10);
+    const saltRounds = 12;
+  const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-    // Step 1: Create and save User
-    const newUser = new User({
-      username: email, // Username equals email
-      password: password,   
+  const newUser = new User({
+      username: email,
+      password: hashedPassword,
       role,
       email,
-    });
-
-    console.log(newUser);
+  });
     
     
     if(!newUser){
@@ -66,16 +63,21 @@ exports.loginTourGuide = async (req, res) => {
     // Find the tour guide by email
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(400).json({ message: 'Invalid credentials' });
+      return res.status(400).json({ message: 'Invalid email or password' });
     }
 
-    
-    
     // Check if password matches
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      return res.status(400).json({ message: 'Invalid credentials' });
+    const isPasswordValid = await bcrypt.compare(
+        password,
+        user.password
+    );
+
+    if (!isPasswordValid) {
+        return res.status(401).json({
+            message: "Invalid email or password"
+        });
     }
+
     const tourGuide = await TourGuide.findOne({ user: user._id });
     if (!tourGuide) {
       return res.status(404).json({ message: 'Tour guide details not found' });
