@@ -29,7 +29,9 @@ const addTourist = async (req, res) => {
     try {  
         // Create a new tourist
         const tourist = await Tourist.create(req.body);
-        res.status(201).json(tourist);
+        const touristObj = tourist.toObject();
+        delete touristObj.password;
+        res.status(201).json(touristObj);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
