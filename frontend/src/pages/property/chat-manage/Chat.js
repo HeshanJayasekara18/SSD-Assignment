@@ -23,7 +23,7 @@ function ChatManage() {
       try {
         setLoading(true);
         const res = await axios.post(`http://localhost:4000/api/chat/bookingByBussinessId`, {
-          params: { B_Id: businessID }
+          B_Id: businessID
         });
         setBookings(res.data);
         setLoading(false);
