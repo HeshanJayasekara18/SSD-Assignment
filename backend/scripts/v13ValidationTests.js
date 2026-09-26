@@ -237,30 +237,35 @@ const run = async () => {
     }
 
     // ----------------------------------------------------------- CHAT
+    // Note: since V-20, chat sender identity comes from the token and the caller
+    // must be a participant in the booking, so these check input validation only.
+    // Cross-account access is covered by scripts/v20ChatTests.js.
     console.log('\nChat validation:');
     check(
-        'invalid senderModel enum',
+        'oversized message (>2000) rejected before authorisation',
         (await call('POST', '/api/chat', {
             auth: tourist,
-            body: { sender: 'u1', senderModel: 'Hacker', bookingId: 'bk-1', message: 'hi' }
+            body: { bookingId: 'bk-1', message: 'x'.repeat(5000) }
         })).status,
         400
     );
     check(
-        'oversized message (>2000)',
+        'missing message rejected',
         (await call('POST', '/api/chat', {
             auth: tourist,
-            body: { sender: 'u1', senderModel: 'Tourist', bookingId: 'bk-1', message: 'x'.repeat(5000) }
+            body: { bookingId: 'bk-1' }
         })).status,
         400
     );
+    // This token has no Tourist/Business record behind it, so identity
+    // resolution fails and the request is refused before any booking lookup.
     check(
-        'valid chat message',
+        'account with no chat identity is refused',
         (await call('POST', '/api/chat', {
             auth: tourist,
-            body: { sender: `u${STAMP}`, senderModel: 'Tourist', bookingId: `bk-${STAMP}`, message: 'V13 test' }
+            body: { bookingId: `bk-${STAMP}`, message: 'V13 test' }
         })).status,
-        201
+        403
     );
 
     // ------------------------------------------- VEHICLE (multipart)
@@ -388,7 +393,7 @@ const run = async () => {
         users: (await db.collection('users').deleteMany({ email: { $in: [touristEmail, escEmail] } })).deletedCount,
         tourists: (await db.collection('tourists').deleteMany({ email: touristEmail })).deletedCount,
         bookings: (await db.collection('bookings').deleteMany({ touristID: `owner-${STAMP}` })).deletedCount,
-        chats: (await db.collection('chats').deleteMany({ bookingId: `bk-${STAMP}` })).deletedCount,
+        chats: (await db.collection('chats').deleteMany({ bookingId: { $in: ['bk-1', `bk-${STAMP}`] } })).deletedCount,
         vehicles: (await db.collection('vehicles').deleteMany({ userId: `user-${STAMP}` })).deletedCount,
         rooms: (await db.collection('hotelrooms').deleteMany({ userId: `user-${STAMP}` })).deletedCount,
         guides: (await db.collection('tourguides').deleteMany({ guideName: `V13 Guide ${STAMP}` })).deletedCount,
