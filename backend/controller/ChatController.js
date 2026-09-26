@@ -49,10 +49,9 @@ const getChatByUserBooking = async (req, res) => {
 
 const getAllBookingByBussinessId = async (req, res) => {
     try {
-        const { B_Id } = req.body.params;
-        console.log("B_Id", B_Id);
+        const { B_Id } = req.body;
 
-        const bookings = await Booking.find({B_Id:B_Id}); 
+        const bookings = await Booking.find({B_Id:B_Id});
         res.status(200).json(bookings);
     } catch (error) {
         res.status(500).json({ message: error.message });
