@@ -53,7 +53,6 @@ exports.getDashboardStats = async (req, res) => {
 // Create a new tour guide profile
 exports.createProfile = async (req, res) => {
   try {
-    console.log('Full request body:', req.body);
     const {
       guideId,
       gender,

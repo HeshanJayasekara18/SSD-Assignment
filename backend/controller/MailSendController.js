@@ -47,7 +47,7 @@ CeylonGo`;
 
   try {
     const info = await transporter.sendMail(mailOptions);
-    console.log("Email sent:", info.response);
+    console.log("Email sent successfully");
     res.status(200).json({ message: 'Email sent' });
   } catch (error) {
     console.error('Error sending email:', error);
@@ -95,7 +95,7 @@ const sendRegistrationMail = async (req, res) => {
 
   try {
     const info = await transporter.sendMail(mailOptions);
-    console.log("Registration email sent:", info.response);
+    console.log("Registration email sent:");
     res.status(200).json({ message: 'Registration email sent' });
   } catch (error) {
     console.error('Error sending registration email:', error);

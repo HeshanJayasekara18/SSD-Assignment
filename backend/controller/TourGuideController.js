@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken');
 
 exports.registerTourGuide = async (req, res) => {
   const { guideName, email, password, role } = req.body;
-  console.log('Registering tour guide:', { guideName, email, password, role });
+  console.log("Successfully registered tour guide");
 
   try {
     // Check if user already exists
