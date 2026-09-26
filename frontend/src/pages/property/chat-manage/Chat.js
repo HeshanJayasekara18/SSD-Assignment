@@ -17,14 +17,17 @@ function ChatManage() {
   const touristID = localStorage.getItem("touristID") ; 
   const businessID = localStorage.getItem("businessID") ;
 
+  // The server derives sender identity from this token, so it is required on
+  // every chat request.
+  const authHeader = { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } };
+
   useEffect(() => {
     // Fetch all bookings with chats
     const fetchBookings = async () => {
       try {
         setLoading(true);
-        const res = await axios.post(`http://localhost:4000/api/chat/bookingByBussinessId`, {
-          B_Id: businessID
-        });
+        // B_Id is derived from the authenticated account server-side.
+        const res = await axios.post(`http://localhost:4000/api/chat/bookingByBussinessId`, {}, authHeader);
         setBookings(res.data);
         setLoading(false);
       } catch (err) {
@@ -60,11 +63,8 @@ function ChatManage() {
   const fetchMessages = async (bookingId) => {
     try {
       const res = await axios.get(`http://localhost:4000/api/chat`, {
-        params: {
-          bookingId: bookingId,
-          userId: userID,
-          senderModel: 'Business',
-        }
+        params: { bookingId: bookingId },
+        ...authHeader
       });
       setMessages(res.data.chats || []); // it should be res.data.chats not res.data.message
     } catch (err) {
@@ -85,12 +85,11 @@ function ChatManage() {
     if (!newMessage.trim() || !selectedBooking) return;
     
     try {
+      // sender and senderModel are set by the server from the auth token.
       const res = await axios.post(`http://localhost:4000/api/chat/`, {
-        sender: userID,             
-        senderModel: 'Business',    
-        bookingId: selectedBooking, 
-        message: newMessage        
-      });
+        bookingId: selectedBooking,
+        message: newMessage
+      }, authHeader);
 
       // After saving, maybe you want to refresh chats instead of setMessages(res.data.messages)
       setMessages(prevMessages => [...prevMessages, res.data.chat]);
