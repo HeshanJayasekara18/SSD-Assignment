@@ -4,22 +4,8 @@ const BussinessAgent = require('../model/BussinessAgent');
 const Bussiness = require('../model/Bussiness'); 
 const Tourist = require('../model/Tourist');   
 const TourGuide = require('../model/TourGuide');
-const jwt = require('jsonwebtoken');
+const generateToken = require("../utils/generateToken");
 
-const buildToken = (user) => {
-    if (!process.env.JWT_SECRET) {
-        throw new Error('JWT_SECRET is not configured');
-    }
-
-    return jwt.sign({
-        user: {
-            id: user._id,
-            userID: user.userID,
-            email: user.email,
-            role: user.role
-        }
-    }, process.env.JWT_SECRET, { expiresIn: '1d' });
-};
 
 
 const login = async (req, res) => {
@@ -43,7 +29,7 @@ const login = async (req, res) => {
             });
         }
 
-        const token = buildToken(user);
+        const token = generateToken(user);
 
         if(user.role=='Admin'){
             return res.status(200).json({

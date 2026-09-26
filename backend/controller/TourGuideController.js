@@ -1,7 +1,7 @@
 const bcrypt = require("bcrypt");
 const TourGuide = require('../model/TourGuide');
 const User = require('../model/User');
-const jwt = require('jsonwebtoken');
+const generateToken = require("../utils/generateToken");
 
 exports.registerTourGuide = async (req, res) => {
   const { guideName, email, password, role } = req.body;
@@ -90,8 +90,7 @@ exports.loginTourGuide = async (req, res) => {
       return res.status(404).json({ message: 'Tour guide details not found' });
     }
 
-    // Create and return JWT token
-    const token = jwt.sign({ id: tourGuide._id }, 'your_jwt_secret', { expiresIn: '1d' });
+    const token = generateToken(user);
         
     res.status(200).json({
       message: 'Login successful',

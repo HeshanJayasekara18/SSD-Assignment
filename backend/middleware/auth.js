@@ -1,31 +1,66 @@
-const jwt = require('jsonwebtoken'); // Make sure you install jsonwebtoken package
+const jwt = require("jsonwebtoken");
 
 // Middleware to check if the user is authenticated
 const authenticateUser = (req, res, next) => {
-    const authHeader = req.headers['authorization']; // Get token from the request headers
-    const token = authHeader && authHeader.startsWith('Bearer ')
-        ? authHeader.slice(7)
-        : authHeader;
-
-    if (!token) {
-        return res.status(401).json({ message: 'No token provided, authorization denied' });
-    }
-    
     try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        req.user = decoded.user || decoded; // Attach the decoded user info to the request
+        const authHeader = req.headers.authorization;
+
+        if (!authHeader || !authHeader.startsWith("Bearer ")) {
+            return res.status(401).json({
+                message: "Authentication required"
+            });
+        }
+
+        const token = authHeader.split(" ")[1];
+
+        if (!process.env.JWT_SECRET) {
+            console.error("JWT_SECRET is not configured");
+
+            return res.status(500).json({
+                message: "Internal server error"
+            });
+        }
+
+        const decoded = jwt.verify(
+            token,
+            process.env.JWT_SECRET,
+            {
+                algorithms: ["HS256"],
+                issuer: "ceylongo-api",
+                audience: "ceylongo-client"
+            }
+        );
+
+        req.user = {
+            userID: decoded.userID,
+            role: decoded.role
+        };
+
         next();
-    } catch (err) {
-        return res.status(401).json({ message: 'Token is not valid' });
+
+    } catch (error) {
+        return res.status(401).json({
+            message: "Invalid or expired token"
+        });
     }
 };
 
 // Middleware to check user role dynamically
-const authorize = (...roles) => {
+const authorize = (...allowedRoles) => {
     return (req, res, next) => {
-        if (!req.user || !roles.includes(req.user.role)) {
-            return res.status(403).json({ message: 'Access denied, insufficient permissions' });
+
+        if (!req.user) {
+            return res.status(401).json({
+                message: "Authentication required"
+            });
         }
+
+        if (!allowedRoles.includes(req.user.role)) {
+            return res.status(403).json({
+                message: "Access denied"
+            });
+        }
+
         next();
     };
 };
