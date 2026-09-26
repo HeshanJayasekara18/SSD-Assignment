@@ -2,6 +2,7 @@ const bcrypt = require("bcrypt");
 const TourGuide = require('../model/TourGuide');
 const User = require('../model/User');
 const generateToken = require("../utils/generateToken");
+const setAuthCookie = require("../utils/setAuthCookie");
 
 exports.registerTourGuide = async (req, res) => {
   const { guideName, email, password, role } = req.body;
@@ -91,10 +92,10 @@ exports.loginTourGuide = async (req, res) => {
     }
 
     const token = generateToken(user);
+    setAuthCookie(res, token);
         
     res.status(200).json({
       message: 'Login successful',
-      token,
       guideId: tourGuide._id,
       guideName: tourGuide.guideName
     });

@@ -1,17 +1,14 @@
 const jwt = require("jsonwebtoken");
 
-// Middleware to check if the user is authenticated
 const authenticateUser = (req, res, next) => {
     try {
-        const authHeader = req.headers.authorization;
+        const token = req.cookies?.accessToken;
 
-        if (!authHeader || !authHeader.startsWith("Bearer ")) {
+        if (!token) {
             return res.status(401).json({
                 message: "Authentication required"
             });
         }
-
-        const token = authHeader.split(" ")[1];
 
         if (!process.env.JWT_SECRET) {
             console.error("JWT_SECRET is not configured");
@@ -40,7 +37,7 @@ const authenticateUser = (req, res, next) => {
 
     } catch (error) {
         return res.status(401).json({
-            message: "Invalid or expired token"
+            message: "Invalid or expired authentication"
         });
     }
 };

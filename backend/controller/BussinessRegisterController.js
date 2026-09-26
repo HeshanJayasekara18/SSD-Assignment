@@ -3,6 +3,7 @@ const User = require('../model/User');
 const Bussiness = require('../model/Bussiness'); 
 const BussinessAgent = require('../model/BussinessAgent');
 const generateToken = require("../utils/generateToken");
+const setAuthCookie = require("../utils/setAuthCookie");
 
 
 const register = async (req, res) => {
@@ -119,10 +120,10 @@ const loginBussiness = async (req, res) => {
         }
 
         const token = generateToken(user);
+        setAuthCookie(res, token);
 
         res.status(200).json({ 
             message: "Login successful", 
-            token,
             user: {
                 id: user._id,
                 username: user.username,
