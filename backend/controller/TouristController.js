@@ -12,6 +12,10 @@ const getAllTourist = async (req, res) => {
 
 const getTourist = async (req, res) => {
     try {
+        // if (req.user.role !== 'Admin' && req.user.userID !== req.params.id) {
+            // return res.status(403).json({ message: 'Access denied' });
+        // }
+
         const { id } = req.params;
         const tourist = await Tourist.findOne({ touristID: id });
         
