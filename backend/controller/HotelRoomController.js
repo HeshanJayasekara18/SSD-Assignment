@@ -1,5 +1,27 @@
 const HotelRoom = require ("../model/hotelRoom");
 
+// Security: only these fields may be written from a request body.
+const HOTEL_ROOM_WRITABLE_FIELDS = [
+    'name',
+    'description',
+    'quantity',
+    'availability',
+    'price_day',
+    'price_month',
+    'bed',
+    'max_occupancy'
+];
+
+const pickHotelRoomFields = (source) => {
+    const result = {};
+    HOTEL_ROOM_WRITABLE_FIELDS.forEach((field) => {
+        if (source[field] !== undefined) {
+            result[field] = source[field];
+        }
+    });
+    return result;
+};
+
 
 
 const addHotelRoom = async (req, res) => {
@@ -110,7 +132,9 @@ const getHotelRoom = async (req,res) => {
 const updateHotelRoom = async (req, res) => {
     try {
         const { id } = req.params; // HR_Id
-        const updateData = { ...req.body };  // Get the data from the request body
+        // Security: whitelist writable fields so a client cannot set HR_Id, B_Id
+        // ownership or any other field by adding it to the request body.
+        const updateData = pickHotelRoomFields(req.body);
 
         // If an image is uploaded, handle the image data similarly to how it is handled for the vehicle update
         if (req.file) {

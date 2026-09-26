@@ -1,0 +1,77 @@
+
+  V-13 — Insufficient server-side input validation
+  Live demonstration against http://localhost:4055
+
+────────────────────────────────────────────────────────────────
+  ATTACK 1  Anyone can make themselves an administrator
+────────────────────────────────────────────────────────────────
+
+   The signup form in the browser only ever offers a business account.
+   But the form is not what talks to the server — this is:
+
+   What an attacker sends:
+
+     curl -X POST http://localhost:4055/api/bussinessregister \
+       -H "Content-Type: application/json" \
+       -d '{"email":"viva-attacker-1790416748130@evil.com",
+            "password":"password123",
+            "role":"Admin",
+            "fullName":"Attacker", "contact":"0771234567",
+            "businessName":"Evil Co", "businessAddress":"x",
+            "businessType":"hotel"}'
+
+   What the database actually stored:
+
+     role = "Bussiness"
+
+   Result: BLOCKED
+   The injected role was discarded. The endpoint decides the role,
+   not the request.
+
+────────────────────────────────────────────────────────────────
+  ATTACK 2  Anyone can set a booking price to zero
+────────────────────────────────────────────────────────────────
+
+   First, a normal booking is made through the system — a $349 tour.
+
+     bookingID       = 78e1a12e-ab3d-41b8-97bb-b4a2f5f673f8
+     payment_amount  = 349
+     touristID       = real-customer-1790416748130
+
+   Stripe charges whatever this record says. So the attacker edits it:
+
+   What an attacker sends:
+
+     curl -X PUT http://localhost:4055/api/Booking/78e1a12e-ab3d-41b8-97bb-b4a2f5f673f8 \
+       -H "Content-Type: application/json" \
+       -d '{"payment_amount": 0,
+            "touristID": "attacker"}'
+
+   What the database actually stored:
+
+     payment_amount  = 349   (unchanged)
+     touristID       = real-customer-1790416748130   (unchanged)
+
+   Result: BLOCKED
+   Both fields are immutable after creation, so the edit was dropped.
+
+────────────────────────────────────────────────────────────────
+  ATTACK 3  No login needed to read every customer booking
+────────────────────────────────────────────────────────────────
+
+   These endpoints had no authentication at all.
+
+   What an attacker sends:
+
+     curl http://localhost:4055/api/Booking     # no token, no password
+
+   Server responded:  HTTP 401
+
+   Result: BLOCKED  — authentication is now required.
+
+────────────────────────────────────────────────────────────────
+    0 of 3 attacks succeeded — all attacks blocked.
+────────────────────────────────────────────────────────────────
+
+  (demo records cleaned up)
+
