@@ -1,3 +1,4 @@
+const bcrypt = require("bcrypt");
 const User = require('../model/User');
 const Bussiness = require('../model/Bussiness'); 
 const BussinessAgent = require('../model/BussinessAgent');
@@ -12,14 +13,22 @@ const register = async (req, res) => {
             return res.status(400).json({ message: "Email is already registered. Please use a different email." });
         }
 
+        
+        const saltRounds = 12;
+
+        const hashedPassword = await bcrypt.hash(
+            req.body.password,
+            saltRounds
+        );
+
         // Create User
-        const user = await User.create({          
+        const newUser = new User({
             username: req.body.email,
-            password: req.body.password, 
+            password: hashedPassword,
             role: req.body.role,
             email: req.body.email
         });
-
+        
         // Create Business Agent
         const businessAgent = await BussinessAgent.create({
             fullname: req.body.fullName, // Corrected property name
@@ -39,14 +48,19 @@ const register = async (req, res) => {
         });
 
         res.status(201).json({ 
-            message: "User, Business Agent, and Business created successfully", 
-            user, 
+            message: "User, Business Agent, and Business created successfully",  
+            user: {
+                id: newUser._id,
+                username: newUser.username,
+                email: newUser.email,
+                role: newUser.role
+           },
             businessAgent, 
             business 
         });
 
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({ message: "Internal server error" });
     }
 };
 
@@ -90,23 +104,32 @@ const loginBussiness = async (req, res) => {
         const { email, password } = req.body;
 
         // Check if the user exists
-        const user = await User.findOne({ email });
+        const user = await User.findOne({ email }).select("+password");
 
         if (!user) {
-            return res.status(400).json({ message: "Invalid email or password" });
+            return res.status(401).json({ message: "Invalid email or password" });
         }
 
         // Check if the password is correct
-        const isMatch = await user.comparePassword(password);
+        const isMatch = await bcrypt.compare(password,user.password);
 
         if (!isMatch) {
-            return res.status(400).json({ message: "Invalid email or password" });
+            return res.status(401).json({ message: "Invalid email or password" });
         }
 
-        res.status(200).json({ message: "Login successful", user });
+        res.status(200).json({ 
+            message: "Login successful", 
+            user: {
+                id: user._id,
+                username: user.username,
+                email: user.email,
+                role: user.role
+            },
+
+         });
 
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({ message: "Internal server error" });
     }
 };
 

@@ -1,3 +1,4 @@
+const bcrypt = require("bcrypt");
 const User = require('../model/User');
 const BussinessAgent = require('../model/BussinessAgent');
 const Bussiness = require('../model/Bussiness'); 
@@ -25,14 +26,21 @@ const login = async (req, res) => {
     try {
         const { email, password } = req.body;
 
-        const user = await User.findOne({ email });
+        const user = await User.findOne({email: email }).select("+password");
 
         if (!user) {
-            return res.status(400).json({ message: "Invalid email or password" });
+            return res.status(401).json({ message: "Invalid email or password" });
         }
 
-        if (user.password !== password) {
-            return res.status(400).json({ message: "Invalid email or password" });
+        const isPasswordValid = await bcrypt.compare(
+            password,
+            user.password
+        );
+
+        if (!isPasswordValid) {
+            return res.status(401).json({
+                message: "Invalid email or password"
+            });
         }
 
         const token = buildToken(user);

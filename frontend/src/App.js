@@ -48,6 +48,9 @@ import PaymentCancelled from './pages/payment-result/PaymentCancelled';
 import FeedbackForm from './common/feedback-rating/feedback-page/FeedbackForm';
 import TouristFeedbackDisplay from './common/feedback-rating/feedback-display/TouristFeedbackDisplay';
 
+import PaymentSuccess from './pages/payment-result/PaymentSuccess';
+import PaymentCancelled from './pages/payment-result/PaymentCancelled';
+
 
 
 import Gallary from './pages/landing/gallary/Gallary'
