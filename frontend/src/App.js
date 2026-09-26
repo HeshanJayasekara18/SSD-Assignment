@@ -42,7 +42,8 @@ import TourGuideProfile from './pages/tour-guide/tourguide-profile/TourGuideProf
 import TourGuideSignUp from './pages/tour-guide/tourguide-signup/TourGuideSignUp';
 import TourGuide from './pages/tour-guide/TourGuide';
 import ChatManage from './pages/property/chat-manage/Chat';
-
+import PaymentSuccess from './pages/payment-result/PaymentSuccess';
+import PaymentCancelled from './pages/payment-result/PaymentCancelled';
 
 import FeedbackForm from './common/feedback-rating/feedback-page/FeedbackForm';
 import TouristFeedbackDisplay from './common/feedback-rating/feedback-display/TouristFeedbackDisplay';
