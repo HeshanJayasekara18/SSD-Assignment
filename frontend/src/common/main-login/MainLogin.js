@@ -42,9 +42,6 @@ const MainLogin = () => {
     axios.post('http://localhost:4000/api/login', loginData)
       .then(response => {       
         console.log('Login successful:', response.data);
-        if (response.data.token) {
-          localStorage.setItem("token", response.data.token);
-        }
 
         if (response.data.userDetails.role === 'Admin') {
           navigate('/admin');
