@@ -36,13 +36,26 @@ const Touristregister = async (req, res) => {
 
         res.status(201).json({
             message: "User and Tourist created successfully",
-            user,
-            tourist
+            user: {
+                id: user._id,
+                username: user.username,
+                email: user.email,
+                role: user.role
+            },
+
+            tourist: {
+                id: tourist._id,
+                touristID: tourist.touristID,
+                fullname: tourist.fullname,
+                email: tourist.email,
+                country: tourist.country,
+                mobile_number: tourist.mobile_number
+            }
         });
 
 
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({ message: "Internal server error" });
     }
 };
 
@@ -65,7 +78,7 @@ const getTouristDetails = async (req, res) => {
             usertourist
          });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({message: "Internal server error" });
     }
 }
 // Add to TouristRegisterController.js
