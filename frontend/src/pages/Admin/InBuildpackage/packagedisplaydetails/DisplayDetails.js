@@ -111,7 +111,9 @@ const DisplayDetails = () => {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this tour package?')) {
       try {
-        await axios.delete(`http://localhost:4000/api/tourPackage/${id}`);
+        await axios.delete(`http://localhost:4000/api/tourPackage/${id}`, {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
+        });
         
         setTourPackages(prevPackages => prevPackages.filter(pkg => pkg.tp_Id !== id));
         setFilteredPackages(prevPackages => prevPackages.filter(pkg => pkg.tp_Id !== id));

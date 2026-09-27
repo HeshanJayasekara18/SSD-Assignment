@@ -91,10 +91,13 @@ function VehicleForm({ vehicle, type, getAllVehicle }) {
             data.append(key, formData[key]);
         }
 
-        data.append("userId", localStorage.getItem("userID")); 
 
         axios.post("http://localhost:4000/api/vehicle", data, {
-            headers: { "Content-Type": "multipart/form-data" }
+            headers: {
+                "Content-Type": "multipart/form-data",
+                // The server derives the owning business from this token.
+                Authorization: `Bearer ${localStorage.getItem("token")}`
+            }
         })
         .then(response => {
             alert("Vehicle added successfully!");
@@ -113,10 +116,13 @@ function VehicleForm({ vehicle, type, getAllVehicle }) {
             data.append(key, formData[key]);
         }
 
-        data.append("userId", localStorage.getItem("userID")); 
 
         axios.put(`http://localhost:4000/api/vehicle/${vehicle.V_Id}`, data, {
-            headers: { "Content-Type": "multipart/form-data" }
+            headers: {
+                "Content-Type": "multipart/form-data",
+                // The server derives the owning business from this token.
+                Authorization: `Bearer ${localStorage.getItem("token")}`
+            }
         })
         .then(response => {
             alert("Vehicle updated successfully!");
