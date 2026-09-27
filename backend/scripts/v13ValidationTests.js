@@ -82,6 +82,25 @@ const run = async () => {
     const tourist = token('Tourist');
     const guide = token('TourGuide');
 
+    // Since V-24, vehicle/hotel-room management requires a Bussiness (or Admin)
+    // account whose business record exists in the database, because the owning
+    // B_Id is resolved from the authenticated account rather than the request.
+    await mongoose.connect(process.env.MONGO_URI);
+    const BussinessAgent = require('../model/BussinessAgent');
+    const Bussiness = require('../model/Bussiness');
+    const bizUserID = `v13-biz-${STAMP}`;
+    const bizAgent = await BussinessAgent.create({
+        fullname: 'V13 Biz', userAddress: 'addr', contact: '0771234567', userID: bizUserID
+    });
+    await Bussiness.create({
+        BA_Id: bizAgent.BA_Id, businessName: `V13 Biz ${STAMP}`, businessAddress: 'addr',
+        description: 'demo', bussinessType: 'hotel'
+    });
+    const business = jwt.sign(
+        { user: { userID: bizUserID, email: `${bizUserID}@test.com`, role: 'Bussiness' } },
+        process.env.JWT_SECRET, { expiresIn: '1h' }
+    );
+
     // ---------------------------------------------------------------- AUTH
     console.log('Authentication required on previously-open endpoints:');
     check('GET  /api/Booking   unauthenticated', (await call('GET', '/api/Booking')).status, 401);
@@ -165,7 +184,6 @@ const run = async () => {
         }
     });
 
-    await mongoose.connect(process.env.MONGO_URI);
     const escUser = await mongoose.connection.collection('users').findOne({ email: escEmail });
     check('injected role:Admin is NOT stored', escUser ? escUser.role : 'missing', 'Bussiness');
 
@@ -271,7 +289,6 @@ const run = async () => {
     // ------------------------------------------- VEHICLE (multipart)
     console.log('\nVehicle validation (multipart/form-data):');
     const vehicleFields = {
-        B_Id: 'biz-1',
         modelName: `V13 Vehicle ${STAMP}`,
         seats: 5,
         fuelType: 'Petrol',
@@ -279,34 +296,32 @@ const run = async () => {
         doors: 4,
         status: 'Available',
         priceDay: 5000,
-        priceMonth: 120000,
-        userId: `user-${STAMP}`
+        priceMonth: 120000
     };
 
     check(
         'non-numeric seats',
         (await call('POST', '/api/vehicle', {
-            auth: tourist,
+            auth: business,
             form: pngForm({ ...vehicleFields, seats: 'notanumber' }, 'image')
         })).status,
         400
     );
     check(
         'seats out of range',
-        (await call('POST', '/api/vehicle', { auth: tourist, form: pngForm({ ...vehicleFields, seats: 9999 }, 'image') }))
+        (await call('POST', '/api/vehicle', { auth: business, form: pngForm({ ...vehicleFields, seats: 9999 }, 'image') }))
             .status,
         400
     );
     check(
         'valid vehicle (numeric strings coerced)',
-        (await call('POST', '/api/vehicle', { auth: tourist, form: pngForm(vehicleFields, 'image') })).status,
+        (await call('POST', '/api/vehicle', { auth: business, form: pngForm(vehicleFields, 'image') })).status,
         201
     );
 
     // ---------------------------------------- HOTEL ROOM (multipart)
     console.log('\nHotel room validation (multipart/form-data):');
     const roomFields = {
-        B_Id: 'biz-1',
         name: `V13 Room ${STAMP}`,
         description: 'Sea view',
         quantity: 5,
@@ -314,19 +329,18 @@ const run = async () => {
         price_day: 8000,
         price_month: 200000,
         bed: 2,
-        max_occupancy: 4,
-        userId: `user-${STAMP}`
+        max_occupancy: 4
     };
 
     check(
         'negative price_day',
-        (await call('POST', '/api/hotelroom', { auth: tourist, form: pngForm({ ...roomFields, price_day: -1 }, 'image') }))
+        (await call('POST', '/api/hotelroom', { auth: business, form: pngForm({ ...roomFields, price_day: -1 }, 'image') }))
             .status,
         400
     );
     check(
         'valid hotel room',
-        (await call('POST', '/api/hotelroom', { auth: tourist, form: pngForm(roomFields, 'image') })).status,
+        (await call('POST', '/api/hotelroom', { auth: business, form: pngForm(roomFields, 'image') })).status,
         201
     );
 
@@ -398,8 +412,10 @@ const run = async () => {
         rooms: (await db.collection('hotelrooms').deleteMany({ userId: `user-${STAMP}` })).deletedCount,
         guides: (await db.collection('tourguides').deleteMany({ guideName: `V13 Guide ${STAMP}` })).deletedCount,
         profiles: (await db.collection('tourguideprofiles').deleteMany({ guide: testGuide._id })).deletedCount,
-        agents: (await db.collection('bussinessagents').deleteMany({ fullname: 'Attacker' })).deletedCount,
-        businesses: (await db.collection('bussinesses').deleteMany({ businessName: 'Evil Co' })).deletedCount
+        agents: (await db.collection('bussinessagents').deleteMany({ fullname: { $in: ['Attacker', 'V13 Biz'] } })).deletedCount,
+        businesses: (await db.collection('bussinesses').deleteMany({ businessName: { $in: ['Evil Co', `V13 Biz ${STAMP}`] } })).deletedCount,
+        v24vehicles: (await db.collection('vehicles').deleteMany({ B_Id: { $exists: true }, modelName: `V13 Vehicle ${STAMP}` })).deletedCount,
+        v24rooms: (await db.collection('hotelrooms').deleteMany({ name: `V13 Room ${STAMP}` })).deletedCount
     };
     console.log(' ', JSON.stringify(removed));
 
