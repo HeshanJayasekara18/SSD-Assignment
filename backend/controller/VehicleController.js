@@ -1,4 +1,5 @@
 const Vehicle = require ('../model/Vehicle');
+const { resolveBusinessIdentity, assertResourceOwner } = require('../middleware/bookingAccess');
 
 // Security: only these fields may be written from a request body.
 const VEHICLE_WRITABLE_FIELDS = [
@@ -26,8 +27,10 @@ const pickVehicleFields = (source) => {
 
 const getVehicle = async (req, res) => {
     try {
-        const { V_Id } = req.params; 
-        const vehicle = await Vehicle.findOne({ V_Id: V_Id });
+        // The route is declared as '/:id', so the parameter is req.params.id.
+        // Reading req.params.V_Id here always produced undefined.
+        const { id } = req.params;
+        const vehicle = await Vehicle.findOne({ V_Id: id });
 
         if (!vehicle) {
             return res.status(404).json({ message: "Vehicle not found" });
@@ -42,7 +45,17 @@ const getVehicle = async (req, res) => {
 
 const addVehicle = async (req, res) => {
     try {
-        const { B_Id, modelName, seats, fuelType, transmission, doors, status, priceDay, priceMonth ,userId} = req.body;
+        const { modelName, seats, fuelType, transmission, doors, status, priceDay, priceMonth } = req.body;
+
+        // Security (V-24): the owning business is derived from the authenticated
+        // account, never from req.body, so a caller cannot create a vehicle for
+        // another business by submitting a forged B_Id.
+        const identity = await resolveBusinessIdentity(req.user);
+        if (!identity) {
+            return res.status(403).json({ message: 'You are not authorized to manage this resource' });
+        }
+        const B_Id = identity.B_Id;
+        const userId = identity.userID;
 
         if (!req.file) {
             return res.status(400).json({ message: "Image is required" });
@@ -76,6 +89,15 @@ const addVehicle = async (req, res) => {
 const updateVehicle = async (req, res) => {
     try {
         const { id } = req.params;
+
+        // Security (V-24): load the vehicle and confirm the caller owns it
+        // before changing anything. Returns 404 if missing, 403 if owned by
+        // another business.
+        const access = await assertResourceOwner(Vehicle, { V_Id: id }, req.user);
+        if (!access.ok) {
+            return res.status(access.status).json({ message: access.message });
+        }
+
         // Security: whitelist writable fields so V_Id / B_Id / userId ownership
         // cannot be reassigned by adding them to the request body.
         const updateData = pickVehicleFields(req.body);
@@ -168,8 +190,14 @@ const getAllVehicle = async (req, res) => {
 };
 
 const deleteVehicle = async (req,res) => {
-    const V_Id = req.params.id;  
+    const V_Id = req.params.id;
     try{
+        // Security (V-24): only the owning business (or an Admin) may delete.
+        const access = await assertResourceOwner(Vehicle, { V_Id: V_Id }, req.user);
+        if (!access.ok) {
+            return res.status(access.status).json({ message: access.message });
+        }
+
         const deleteVehicle = await Vehicle.findOneAndDelete({ V_Id: V_Id });
         res.status(200).json(deleteVehicle);
     }catch(error){

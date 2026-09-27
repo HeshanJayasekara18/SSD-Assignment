@@ -26,7 +26,9 @@ function VehicleCard({ vehicle , getAllVehicle,V_Id }) {
 
       const deleteVehicle = () => {
         if (window.confirm("Are you sure you want to delete this vehicle?")) {
-            axios.delete(`http://localhost:4000/api/vehicle/${V_Id}`)
+            axios.delete(`http://localhost:4000/api/vehicle/${V_Id}`, {
+                headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
+            })
                 .then(response => {
                     getAllVehicle();
                     console.log(response.data);
