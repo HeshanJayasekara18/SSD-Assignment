@@ -1,10 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const { saveChat, getChatByUserBooking, getAllBookingByBussinessId } = require('../controller/ChatController');
-
+const { authenticateUser } = require("../middleware/auth");
+const { saveChat, getChatByUserBooking ,getAllBookingByBussinessId} = require('../controller/ChatController');
 const validate = require('../middleware/validate');
 const { requiredText, idRule, body, query } = require('../middleware/validators');
-const { authenticateUser } = require('../middleware/auth');
 
 // Security (V-20): `sender`, `senderModel` and `userId` are deliberately NOT
 // accepted here. Sender identity is resolved from the authenticated token in the

@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const { authenticateUser } = require("../middleware/auth");
 const {
     getAllHotelRoom,
     getHotelRoom,
@@ -21,7 +22,6 @@ const {
     param,
     query
 } = require('../middleware/validators');
-const { authenticateUser } = require('../middleware/auth');
 
 // Note: these routes accept multipart/form-data, so numeric fields arrive as
 // strings. The isInt/isFloat rules below coerce them via toInt()/toFloat().
