@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const { authenticateUser } = require("../middleware/auth");
 const {
     register,
     getBussinessDetails,
@@ -38,7 +39,7 @@ router.post(
     register
 );
 
-router.get('/', [idRule('B_Id', query, { label: 'Business ID' })], validate, getBussinessDetails);
+router.get('/', authenticateUser,[idRule('B_Id', query, { label: 'Business ID' })], validate, getBussinessDetails);
 
 router.post(
     '/login',

@@ -27,13 +27,15 @@ let failed = 0;
 const failures = [];
 
 const token = (role = 'Tourist') =>
-    jwt.sign({ userID: `v13-${STAMP}`, role, email: `v13-${STAMP}@test.com` }, process.env.JWT_SECRET, {
-        expiresIn: '1h'
+    jwt.sign({ userID: `v13-${STAMP}`, role }, process.env.JWT_SECRET, {
+        algorithm: 'HS256', expiresIn: '1h',
+        issuer: 'ceylongo-api', audience: 'ceylongo-client', subject: `v13-${STAMP}`
     });
 
 const call = async (method, path, { body, form, auth } = {}) => {
     const headers = {};
-    if (auth) headers.Authorization = `Bearer ${auth}`;
+    // Auth travels in an httpOnly cookie since the JWT-cookie migration.
+    if (auth) headers.Cookie = `accessToken=${auth}`;
 
     let payload;
     if (form) {
@@ -97,8 +99,10 @@ const run = async () => {
         description: 'demo', bussinessType: 'hotel'
     });
     const business = jwt.sign(
-        { user: { userID: bizUserID, email: `${bizUserID}@test.com`, role: 'Bussiness' } },
-        process.env.JWT_SECRET, { expiresIn: '1h' }
+        { userID: bizUserID, role: 'Bussiness' },
+        process.env.JWT_SECRET,
+        { algorithm: 'HS256', expiresIn: '1h', issuer: 'ceylongo-api',
+          audience: 'ceylongo-client', subject: bizUserID }
     );
 
     // ---------------------------------------------------------------- AUTH

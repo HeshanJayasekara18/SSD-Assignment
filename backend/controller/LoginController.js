@@ -4,22 +4,9 @@ const BussinessAgent = require('../model/BussinessAgent');
 const Bussiness = require('../model/Bussiness'); 
 const Tourist = require('../model/Tourist');   
 const TourGuide = require('../model/TourGuide');
-const jwt = require('jsonwebtoken');
+const generateToken = require("../utils/generateToken");
+const setAuthCookie = require("../utils/setAuthCookie");
 
-const buildToken = (user) => {
-    if (!process.env.JWT_SECRET) {
-        throw new Error('JWT_SECRET is not configured');
-    }
-
-    return jwt.sign({
-        user: {
-            id: user._id,
-            userID: user.userID,
-            email: user.email,
-            role: user.role
-        }
-    }, process.env.JWT_SECRET, { expiresIn: '1d' });
-};
 
 
 const login = async (req, res) => {
@@ -43,12 +30,13 @@ const login = async (req, res) => {
             });
         }
 
-        const token = buildToken(user);
 
         if(user.role=='Admin'){
+
+            const token = generateToken(user);
+            setAuthCookie(res, token);
             return res.status(200).json({
                 message: "Login successful",
-                token,
                 userDetails: {
                     userID: user.userID,
                     username: user.username,
@@ -72,9 +60,11 @@ const login = async (req, res) => {
                 return res.status(404).json({ message: "Business details not found" });
             }
 
+             const token = generateToken(user);
+             setAuthCookie(res, token);
+
             res.status(200).json({
                 message: "Login successful",
-                token,
                 userDetails: {
                     userID: user.userID,
                     username: user.username,
@@ -98,9 +88,11 @@ const login = async (req, res) => {
                 return res.status(404).json({ message: "Tourist not found" });
             }
 
+            const token = generateToken(user);
+            setAuthCookie(res, token);
+
             res.status(200).json({
                 message: "Login successful",
-                token,
                 userDetails: {
                     userID: user.userID,
                     username: user.username,
@@ -123,9 +115,11 @@ const login = async (req, res) => {
                 return res.status(404).json({ message: "Tour guide not found" });
             }
 
+            const token = generateToken(user);
+            setAuthCookie(res, token);
+
             return res.status(200).json({
                 message: "Login successful",
-                token,
                 userDetails: {
                     userID: user.userID,
                     username: user.username,
@@ -141,10 +135,56 @@ const login = async (req, res) => {
         }
 
 
-
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 };
 
-module.exports = { login };
+const getCurrentUser = async (req, res) => {
+    try {
+
+        const user = await User.findOne({
+            userID: req.user.userID
+        });
+
+        if (!user) {
+            return res.status(404).json({
+                message: "User not found"
+            });
+        }
+
+        return res.status(200).json({
+            user: {
+                id: user._id,
+                userID: user.userID,
+                username: user.username,
+                email: user.email,
+                role: user.role
+            }
+        });
+
+    } catch (error) {
+
+        console.error("Get current user error:", error);
+
+        return res.status(500).json({
+            message: "Internal server error"
+        });
+    }
+};
+
+const logout = (req, res) => {
+
+    res.clearCookie("accessToken", {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        path: "/"
+    });
+
+    return res.status(200).json({
+        message: "Logout successful"
+    });
+};
+
+module.exports = { login,getCurrentUser,logout };

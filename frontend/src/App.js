@@ -3,6 +3,7 @@ import logo from './logo.svg';
 import './App.css';
 import 'leaflet/dist/leaflet.css';
 
+
 import {BrowserRouter,Route,Routes}from 'react-router-dom';
 import PropertySignup from './pages/property/property-signup/PropertySignup';
 import Property from './pages/property/Property';

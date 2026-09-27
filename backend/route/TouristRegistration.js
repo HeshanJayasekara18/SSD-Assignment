@@ -1,5 +1,7 @@
 const express = require('express');
 const router = express.Router();
+const { authenticateUser, authorize } = require("../middleware/auth");
+const validate = require('../middleware/validate');
 
 const {
   Touristregister,
@@ -8,7 +10,6 @@ const {
   deleteTourist
 } = require('../controller/TouristRegisterController');
 
-const validate = require('../middleware/validate');
 const {
   emailRule,
   passwordRule,
@@ -18,7 +19,7 @@ const {
   mongoIdRule,
   query
 } = require('../middleware/validators');
-const { authenticateUser, authorize } = require('../middleware/auth');
+
 
 router.post(
   '/',
@@ -33,7 +34,7 @@ router.post(
   Touristregister
 );
 
-router.get('/', [idRule('touristID', query, { label: 'Tourist ID' })], validate, getTouristDetails);
+router.get('/', authenticateUser,[idRule('touristID', query, { label: 'Tourist ID' })], validate, getTouristDetails);
 
 router.get('/all', authenticateUser, authorize('Admin'), getAllTourists);
 

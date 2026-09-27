@@ -30,6 +30,10 @@ const Touristregister = async (req, res) => {
             username: email,
             fullname: fullname,
             email,
+            // The Tourist model now requires a password (select: false). Store the
+            // same bcrypt hash as the User record; authentication still happens
+            // against User, so this is never used to log in on its own.
+            password: hashedPassword,
             country,
             mobile_number,
             userID: user.userID

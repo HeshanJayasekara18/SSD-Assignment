@@ -46,7 +46,8 @@ const check = (name, actual, expected) => {
 
 const call = async (method, path, { body, auth, form } = {}) => {
     const headers = {};
-    if (auth) headers.Authorization = `Bearer ${auth}`;
+    // Auth travels in an httpOnly cookie since the JWT-cookie migration.
+    if (auth) headers.Cookie = `accessToken=${auth}`;
 
     let payload;
     if (form) {
@@ -63,8 +64,12 @@ const call = async (method, path, { body, auth, form } = {}) => {
     return { status: res.status, body: json };
 };
 
+// Claims are flat and carry issuer/audience, matching utils/generateToken.js.
 const token = (userID, role) =>
-    jwt.sign({ user: { userID, email: `${userID}@test.com`, role } }, process.env.JWT_SECRET, { expiresIn: '1h' });
+jwt.sign({ userID, role }, process.env.JWT_SECRET, {
+        algorithm: 'HS256', expiresIn: '1h',
+        issuer: 'ceylongo-api', audience: 'ceylongo-client', subject: userID
+    });
 
 const run = async () => {
     console.log(`\nV-24 access control retest against ${BASE}\n`);
@@ -114,14 +119,14 @@ const run = async () => {
     const touristUserID = `${TAG}-tourist`;
     const tourist = await Tourist.create({
         fullname: 'V24 Tourist', email: `${TAG}-tourist@test.com`,
-        mobile_number: 771234567, userID: touristUserID
+        mobile_number: 771234567, userID: touristUserID, password: 'x'
     });
     const touristToken = token(touristUserID, 'Tourist');
 
     const otherTouristUserID = `${TAG}-tourist2`;
     const tourist2 = await Tourist.create({
         fullname: 'V24 Tourist2', email: `${TAG}-tourist2@test.com`,
-        mobile_number: 771234567, userID: otherTouristUserID
+        mobile_number: 771234567, userID: otherTouristUserID, password: 'x'
     });
     const tourist2Token = token(otherTouristUserID, 'Tourist');
 

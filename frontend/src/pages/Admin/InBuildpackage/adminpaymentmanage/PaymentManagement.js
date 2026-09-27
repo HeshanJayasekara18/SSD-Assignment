@@ -62,12 +62,7 @@ const PaymentManagement = () => {
   const fetchPayments = async () => {
     setIsLoading(true);
     try {
-      const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:4000/api/payment/all', {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
+      const response = await fetch('http://localhost:4000/api/payment/all');
       
       if (!response.ok) {
         throw new Error('Failed to fetch payment data');
@@ -171,12 +166,8 @@ const PaymentManagement = () => {
   const deletePayment = async (paymentId) => {
     if (window.confirm('Are you sure you want to delete this payment? This action cannot be undone.')) {
       try {
-        const token = localStorage.getItem('token');
         const response = await fetch(`http://localhost:4000/api/payment/${paymentId}`, {
-          method: 'DELETE',
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
+          method: 'DELETE'
         });
         
         if (!response.ok) {

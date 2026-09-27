@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const GuideProfileController = require('../controller/GuideProfileController');
 const upload = require("../middleware/upload");
+const { authenticateUser } = require("../middleware/auth");
 
 const validate = require('../middleware/validate');
 const {
@@ -15,7 +16,6 @@ const {
     body,
     param
 } = require('../middleware/validators');
-const { authenticateUser } = require('../middleware/auth');
 
 // Matches the enum on the TourGuideProfile model (model/GuideDetails.js).
 const GENDERS = ['male', 'female', 'other'];

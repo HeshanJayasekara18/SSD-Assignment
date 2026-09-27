@@ -68,8 +68,9 @@ const run = async () => {
             bed: 2, max_occupancy: 4, userId: userID, image
         });
         const token = jwt.sign(
-            { user: { userID, email: `${userID}@test.com`, role: 'Bussiness' } },
-            process.env.JWT_SECRET, { expiresIn: '1h' }
+            { userID, role: 'Bussiness' }, process.env.JWT_SECRET,
+            { algorithm: 'HS256', expiresIn: '1h', issuer: 'ceylongo-api',
+              audience: 'ceylongo-client', subject: userID }
         );
         return { business, vehicle, room, token };
     };
@@ -80,11 +81,12 @@ const run = async () => {
     const touristUserID = `${TAG}-tourist`;
     await Tourist.create({
         fullname: 'Demo Tourist', email: `${TAG}-tourist@test.com`,
-        mobile_number: 771234567, userID: touristUserID
+        mobile_number: 771234567, userID: touristUserID, password: 'x'
     });
     const touristToken = jwt.sign(
-        { user: { userID: touristUserID, email: `${touristUserID}@test.com`, role: 'Tourist' } },
-        process.env.JWT_SECRET, { expiresIn: '1h' }
+        { userID: touristUserID, role: 'Tourist' }, process.env.JWT_SECRET,
+        { algorithm: 'HS256', expiresIn: '1h', issuer: 'ceylongo-api',
+          audience: 'ceylongo-client', subject: touristUserID }
     );
 
     await mongoose.disconnect();
