@@ -1,4 +1,5 @@
 const express = require('express');
+const { authenticateUser } = require("../middleware/auth");
 const router = express.Router();
 const {
     getAllVehicle,
@@ -13,9 +14,9 @@ const {
 
 router.get('/', getAllVehicle); 
 router.get('/:id', getVehicle);  
-router.post("/", upload.single("image"), addVehicle);
-router.put("/:id", upload.single("image"), updateVehicle);
-router.delete('/:id', deleteVehicle); 
-router.post('/getVehicleById', getAllVehicleByUserId);
+router.post("/",authenticateUser, upload.single("image"), addVehicle);
+router.put("/:id", authenticateUser,upload.single("image"), updateVehicle);
+router.delete('/:id', authenticateUser,deleteVehicle); 
+router.post('/getVehicleById',authenticateUser, getAllVehicleByUserId);
 
 module.exports = router;

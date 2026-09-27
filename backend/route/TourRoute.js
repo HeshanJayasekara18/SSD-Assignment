@@ -1,6 +1,7 @@
 // TouristRoute.js
 const express = require('express');
 const router = express.Router();
+const { authenticateUser } = require("../middleware/auth");
 const {
     getAllTour,
     getTour,
@@ -11,8 +12,8 @@ const {
 
 router.get('/', getAllTour);
 router.get('/:id', getTour);    
-router.post('/', addTour);      
-router.put('/:id', updateTour); 
-router.delete('/:id', deleteTour); 
+router.post('/', authenticateUser,addTour);      
+router.put('/:id', authenticateUser,updateTour); 
+router.delete('/:id',authenticateUser, deleteTour); 
 
 module.exports = router;

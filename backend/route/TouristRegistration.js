@@ -1,5 +1,7 @@
 const express = require('express');
 const router = express.Router();
+const { authenticateUser } = require("../middleware/auth");
+
 
 const {
   Touristregister,
@@ -9,8 +11,8 @@ const {
 } = require('../controller/TouristRegisterController');
 
 router.post('/', Touristregister);
-router.get('/', getTouristDetails);
-router.get('/all', getAllTourists);
-router.delete('/:id', deleteTourist);
+router.get('/',authenticateUser, getTouristDetails);
+router.get('/all', authenticateUser,getAllTourists);
+router.delete('/:id', authenticateUser,deleteTourist);
 
 module.exports = router;

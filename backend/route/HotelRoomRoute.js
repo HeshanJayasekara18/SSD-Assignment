@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const { authenticateUser } = require("../middleware/auth");
 const {
     getAllHotelRoom,
     getHotelRoom,
@@ -13,9 +14,9 @@ const {
 
 router.get('/', getAllHotelRoom);
 router.get('/:id', getHotelRoom);    
-router.post('/', upload.single("image") ,addHotelRoom);      
-router.put('/:id',upload.single("image"),updateHotelRoom); 
-router.delete('/:id', deleteHotelRoom); 
-router.post('/getHotelRoomById', getAllHotelRoomByUserId); 
+router.post('/', authenticateUser,upload.single("image") ,addHotelRoom);      
+router.put('/:id',authenticateUser,upload.single("image"),updateHotelRoom); 
+router.delete('/:id', authenticateUser,deleteHotelRoom); 
+router.post('/getHotelRoomById',authenticateUser, getAllHotelRoomByUserId); 
 
 module.exports = router;
