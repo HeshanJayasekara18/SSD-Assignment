@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { authenticateUser } = require("../middleware/auth");
+const { authenticateUser, authorize } = require("../middleware/auth"); // error here added "authorize" for fix
 const validate = require('../middleware/validate');
 
 const {
