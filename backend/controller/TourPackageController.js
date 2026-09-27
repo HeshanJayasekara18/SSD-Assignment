@@ -1,4 +1,32 @@
 const TourPackage = require('../model/TourPackage');
+
+// Security (V-24): only these fields may be written from a request body. tp_Id
+// is the identifier and is never client-writable. Tour packages carry no
+// business owner in the schema and are managed from the Admin screens, so
+// authorisation for them is role-based (Admin) rather than ownership-based -
+// enforced by authorize('Admin') on the routes.
+const PACKAGE_WRITABLE_FIELDS = [
+    'packageId',
+    'name',
+    'destination',
+    'price',
+    'startDate',
+    'endDate',
+    'tourGuideName',
+    'tourType',
+    'description'
+];
+
+const pickPackageFields = (source) => {
+    const result = {};
+    PACKAGE_WRITABLE_FIELDS.forEach((field) => {
+        if (source[field] !== undefined) {
+            result[field] = source[field];
+        }
+    });
+    return result;
+};
+
 const createTourPackage = async (req, res) => {
     try {
         const { packageId, name, destination, price, startDate, endDate,  tourGuideName,tourType, description } = req.body;
@@ -66,7 +94,10 @@ const getAllTourPackages = async (req, res) => {
 // Get a single tour package by ID
 const getTourPackageById = async (req, res) => {
     try {
-        const tourPackage = await TourPackage.findById(req.params.id);
+        // The update and delete routes address packages by tp_Id, and that is
+        // what the frontend sends, so look up by tp_Id here too. findById()
+        // expected a Mongo _id and threw a cast error on a tp_Id.
+        const tourPackage = await TourPackage.findOne({ tp_Id: req.params.id });
         if (!tourPackage) {
             return res.status(404).json({ message: "Tour package not found" });
         }
@@ -80,8 +111,11 @@ const getTourPackageById = async (req, res) => {
 
 const updateTourPackage =async(req,res)=>{
               try {
-                      const { id } = req.params; 
-                      const updateData = { ...req.body };
+                      const { id } = req.params;
+                      // Security (V-24): whitelist writable fields so tp_Id and
+                      // other server-controlled properties cannot be changed by
+                      // adding them to the request body.
+                      const updateData = pickPackageFields(req.body);
               
                    
                       if (req.file) {

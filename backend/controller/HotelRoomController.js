@@ -1,4 +1,5 @@
 const HotelRoom = require ("../model/hotelRoom");
+const { resolveBusinessIdentity, assertResourceOwner } = require('../middleware/bookingAccess');
 
 // Security: only these fields may be written from a request body.
 const HOTEL_ROOM_WRITABLE_FIELDS = [
@@ -26,7 +27,17 @@ const pickHotelRoomFields = (source) => {
 
 const addHotelRoom = async (req, res) => {
     try {
-        const { B_Id, name, description, quantity, availability, price_day, price_month, bed, max_occupancy,userId } = req.body;
+        const { name, description, quantity, availability, price_day, price_month, bed, max_occupancy } = req.body;
+
+        // Security (V-24): the owning business is derived from the authenticated
+        // account, never from req.body, so a caller cannot create a room for
+        // another business by submitting a forged B_Id.
+        const identity = await resolveBusinessIdentity(req.user);
+        if (!identity) {
+            return res.status(403).json({ message: 'You are not authorized to manage this resource' });
+        }
+        const B_Id = identity.B_Id;
+        const userId = identity.userID;
 
         if (!req.file) {
             return res.status(400).json({ message: "Image is required" });
@@ -132,6 +143,14 @@ const getHotelRoom = async (req,res) => {
 const updateHotelRoom = async (req, res) => {
     try {
         const { id } = req.params; // HR_Id
+
+        // Security (V-24): load the room and confirm the caller owns it before
+        // changing anything. 404 if missing, 403 if owned by another business.
+        const access = await assertResourceOwner(HotelRoom, { HR_Id: id }, req.user);
+        if (!access.ok) {
+            return res.status(access.status).json({ message: access.message });
+        }
+
         // Security: whitelist writable fields so a client cannot set HR_Id, B_Id
         // ownership or any other field by adding it to the request body.
         const updateData = pickHotelRoomFields(req.body);
@@ -169,8 +188,14 @@ const updateHotelRoom = async (req, res) => {
 };
 
 const deleteHotelRoom= async (req,res) => {
-    const HR_Id = req.params.id;  
+    const HR_Id = req.params.id;
     try{
+        // Security (V-24): only the owning business (or an Admin) may delete.
+        const access = await assertResourceOwner(HotelRoom, { HR_Id: HR_Id }, req.user);
+        if (!access.ok) {
+            return res.status(access.status).json({ message: access.message });
+        }
+
         const deleteHotelRoom = await HotelRoom.findOneAndDelete({ HR_Id: HR_Id });
         res.status(200).json(deleteHotelRoom);
     }catch(error){
