@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const { authenticateUser } = require("../middleware/auth");
 const {
     createTourPackage,
     getAllTourPackages,
@@ -13,8 +14,8 @@ const {
 const upload = require("../middleware/upload");
 router.get('/', getAllTourPackages);
 router.get('/:id', getTourPackageById);
-router.post('/',upload.single("image"), createTourPackage);
-router.put('/:id',upload.single("image") ,updateTourPackage);
-router.delete('/:id', deleteTourPackage);
+router.post('/',authenticateUser,upload.single("image"), createTourPackage);
+router.put('/:id',authenticateUser,upload.single("image") ,updateTourPackage);
+router.delete('/:id',authenticateUser, deleteTourPackage);
 module.exports = router;
 //compare this snippet from backend/route/TourPackageRoute.js:

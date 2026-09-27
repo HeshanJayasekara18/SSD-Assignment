@@ -1,4 +1,5 @@
 const express = require('express');
+const { authenticateUser, authorize } = require('../middleware/auth');
 const router = express.Router();
 const {
     getAllBooking,
@@ -22,7 +23,7 @@ const {
     body,
     param
 } = require('../middleware/validators');
-const { authenticateUser, authorize } = require('../middleware/auth');
+
 
 const BOOKING_TYPES = ['hotel', 'vehicle', 'guide'];
 
