@@ -1,0 +1,66 @@
+
+V-13 validation retest against http://localhost:4055
+
+Authentication required on previously-open endpoints:
+  PASS  GET  /api/Booking   unauthenticated  (401)
+  PASS  POST /api/chat      unauthenticated  (401)
+  PASS  POST /api/vehicle   unauthenticated  (401)
+  PASS  POST /api/hotelroom unauthenticated  (401)
+  PASS  POST /api/GuideDetails/profile unauthenticated  (401)
+
+Tourist registration (public) - negative:
+  PASS  empty body  (400)
+  PASS  malformed email  (400)
+  PASS  password under 8 chars  (400)
+  PASS  non-numeric phone  (400)
+  PASS  oversized name (>100)  (400)
+
+Tourist registration - positive:
+  PASS  valid registration  (201)
+
+Privilege escalation (the critical V-13 case):
+  PASS  injected role:Admin is NOT stored  (Bussiness)
+
+Booking validation - negative (authenticated):
+  PASS  invalid booking_type enum  (400)
+  PASS  negative payment_amount  (400)
+  PASS  end_date before start_date  (400)
+  PASS  non-numeric payment_amount  (400)
+
+Booking - positive:
+  PASS  valid booking created  (200)
+
+Mass assignment / payment bypass:
+  PASS  payment_amount unchanged after attack  (1000)
+  PASS  touristID unchanged after attack  (owner-1790416757799)
+  PASS  bookingID unchanged after attack  (783350c9-3d37-4638-8360-37993fef05c9)
+  PASS  legitimate field still updates  (Legitimately Renamed)
+
+Chat validation:
+  PASS  invalid senderModel enum  (400)
+  PASS  oversized message (>2000)  (400)
+  PASS  valid chat message  (201)
+
+Vehicle validation (multipart/form-data):
+  PASS  non-numeric seats  (400)
+  PASS  seats out of range  (400)
+  PASS  valid vehicle (numeric strings coerced)  (201)
+
+Hotel room validation (multipart/form-data):
+  PASS  negative price_day  (400)
+  PASS  valid hotel room  (201)
+
+Guide profile validation (multipart/form-data):
+  PASS  gender wrong case (Male)  (400)
+  PASS  malformed guideId (not an ObjectId)  (400)
+  PASS  age below minimum (12)  (400)
+  PASS  valid guide profile  (201)
+  PASS  GET profile with malformed id  (400)
+
+Cleaning up test records...
+  {"users":2,"tourists":1,"bookings":1,"chats":1,"vehicles":1,"rooms":1,"guides":1,"profiles":1,"agents":0,"businesses":0}
+
+==================================================
+  PASSED: 34    FAILED: 0
+==================================================
+

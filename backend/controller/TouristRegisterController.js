@@ -17,6 +17,7 @@ const Touristregister = async (req, res) => {
         const saltRounds = 12;
         const hashedPassword = await bcrypt.hash(password, saltRounds);
 
+        // Security: role is fixed by the endpoint, never read from req.body.
         const user = await User.create({
             username: email,
             password: hashedPassword,
@@ -61,7 +62,7 @@ const Touristregister = async (req, res) => {
 
 const getTouristDetails = async (req, res) => {
     try {
-        const { TtouristID_Id } = req.query;      
+        const { touristID } = req.query;
         const tourist = await Tourist.findOne({ touristID: touristID });
         if (!tourist) {
             return res.status(404).json({ message: "Tourist not found" });

@@ -22,9 +22,49 @@ const getBooking = async (req, res) => {
     }
 };
 
+// Security: only these fields may ever be written from a request body. Passing
+// req.body straight to Mongoose would let a client set any field on the document.
+const BOOKING_WRITABLE_FIELDS = [
+    'name',
+    'booking_type',
+    'booking_date',
+    'booking_time',
+    'start_date',
+    'end_date',
+    'mobile_number',
+    'payID',
+    'tourID',
+    'payment_amount',
+    'touristID',
+    'B_Id',
+    'hotel_booking',
+    'vehicle_booking',
+    'guide_booking'
+];
+
+// Security: fields that may be set when a booking is CREATED but must never be
+// changed afterwards. payment_amount is the amount PaymentController charges via
+// Stripe, and touristID/B_Id are ownership, so allowing updates would let a
+// client zero out a price or reassign someone else's booking.
+const BOOKING_IMMUTABLE_AFTER_CREATE = ['payment_amount', 'touristID', 'B_Id', 'payID', 'tourID'];
+
+const pickBookingFields = (source, { isUpdate = false } = {}) => {
+    const allowed = isUpdate
+        ? BOOKING_WRITABLE_FIELDS.filter((field) => !BOOKING_IMMUTABLE_AFTER_CREATE.includes(field))
+        : BOOKING_WRITABLE_FIELDS;
+
+    const result = {};
+    allowed.forEach((field) => {
+        if (source[field] !== undefined) {
+            result[field] = source[field];
+        }
+    });
+    return result;
+};
+
 const addBooking = async (req, res) => {
     try {
-        const newBooking = await Booking.create(req.body); 
+        const newBooking = await Booking.create(pickBookingFields(req.body));
         res.status(200).json(newBooking);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -33,16 +73,18 @@ const addBooking = async (req, res) => {
 
 const updateBooking = async (req, res) => {
     const bookingID = req.params.id;
-    const body = req.body;
 
-
-    
     try {
         const updatedBooking = await Booking.findOneAndUpdate(
             { bookingID: bookingID },
-            body,
+            pickBookingFields(req.body, { isUpdate: true }),
             { new: true, runValidators: true }
         );
+
+        if (!updatedBooking) {
+            return res.status(404).json({ message: "Booking not found" });
+        }
+
         res.status(200).json(updatedBooking);
     } catch (error) {
         res.status(500).json({ message: error.message });
