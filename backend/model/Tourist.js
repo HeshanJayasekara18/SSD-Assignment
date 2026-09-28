@@ -7,9 +7,13 @@ const TouristSchema = mongoose.Schema({
     fullname: { type: String, required: true },
     email: { type: String, required: true },
     country: { type: String },
-    mobile_number: { type: Number, required: true },
-    password: { type: String, required: true, select: false },
-    
+    mobile_number: { type: Number },
+    password: { 
+        type: String, 
+        required: function () { return this.authProvider === 'local'; }, 
+        select: false 
+    },
+    authProvider: { type: String, enum: ['local', 'google'], default: 'local' },
     userID: { type: String, required: true},
 });
 
