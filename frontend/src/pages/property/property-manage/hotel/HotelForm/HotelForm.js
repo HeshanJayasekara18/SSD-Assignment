@@ -102,7 +102,11 @@ function HotelForm({ hotelRoom, type, getAllHotelRoom }) {
 
     axios
       .post("http://localhost:4000/api/hotelRoom", data, {
-        headers: { "Content-Type": "multipart/form-data" },
+        headers: {
+                "Content-Type": "multipart/form-data",
+                // The server derives the owning business from this token.
+                Authorization: `Bearer ${localStorage.getItem("token")}`
+            },
       })
       .then((response) => {
         alert("Hotel Room added successfully!");
@@ -125,7 +129,11 @@ function HotelForm({ hotelRoom, type, getAllHotelRoom }) {
 
     axios
       .put(`http://localhost:4000/api/hotelRoom/${hotelRoom.HR_Id}`, data, {
-        headers: { "Content-Type": "multipart/form-data" },
+        headers: {
+                "Content-Type": "multipart/form-data",
+                // The server derives the owning business from this token.
+                Authorization: `Bearer ${localStorage.getItem("token")}`
+            },
       })
       .then((response) => {
         alert("Hotel Room updated successfully!");

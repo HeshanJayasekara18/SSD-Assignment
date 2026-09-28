@@ -29,7 +29,9 @@ function HotelRoomCard({hotel,getAllHotelRoom,HR_Id}) {
 
     const deleteHotelRoom = () => {
         if (window.confirm("Are you sure you want to delete this hotel room?")) {
-            axios.delete(`http://localhost:4000/api/hotelRoom/${HR_Id}`)
+            axios.delete(`http://localhost:4000/api/hotelRoom/${HR_Id}`, {
+                headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
+            })
                 .then(response => {
                     getAllHotelRoom();
                     console.log(response.data);
