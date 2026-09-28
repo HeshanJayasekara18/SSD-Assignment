@@ -14,14 +14,13 @@ function VehiclePage() {
   const [vehicleData, setVehicleData] = useState([]);
   const [open, setOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const userId = localStorage.getItem("userID");
 
   useEffect(() => {
     getAllVehicle();
   }, []);
 
   const getAllVehicle = () => {
-    axios.post(`http://localhost:4000/api/vehicle/getVehicleById?userId=${userId}`)
+    axios.post(`http://localhost:4000/api/vehicle/getVehicleById`)
       .then(response => {
         setVehicleData(response.data);
       })

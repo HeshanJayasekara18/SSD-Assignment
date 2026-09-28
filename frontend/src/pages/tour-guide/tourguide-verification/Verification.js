@@ -13,12 +13,10 @@ const Verification = () => {
     e.preventDefault();
     try {
       const email = localStorage.getItem('email');
-      const token = localStorage.getItem('token');
 
       const response = await axios.post(
         'http://localhost:4000/api/TourGuide/verify',
         { email, verificationCode },
-        { headers: { Authorization: `Bearer ${token}` } }
       );
 
       if (response.data.success) {
@@ -35,12 +33,10 @@ const Verification = () => {
   const handleResendCode = async () => {
     try {
       const email = localStorage.getItem('email');
-      const token = localStorage.getItem('token');
 
       await axios.post(
         'http://localhost:4000/api/TourGuide/resend-verification',
         { email },
-        { headers: { Authorization: `Bearer ${token}` } }
       );
 
       setMessage('A new verification code has been sent to your email');

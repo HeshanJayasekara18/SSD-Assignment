@@ -22,29 +22,21 @@ function TourGuideSideBar() {
         }
 
         const handleLogout = async () => {
-            if (window.confirm('Are you sure you want to delete your account and logout?')) {
-              try {
-                const token = localStorage.getItem('token');
-                const guideId = localStorage.getItem('guideId');
-                
-                // Send a request to delete the account
-                const response = await axios.delete(`http://localhost:4000/api/GuideDetails/profile/${guideId}`, {
-                  headers: { Authorization: `Bearer ${token}` }
-                });
-          
-                // If the request is successful, clear local storage and navigate to login
-                if (response.status === 200) {
-                  localStorage.removeItem('token');
-                  localStorage.removeItem('guideId');
-                  navigate('/login');
-                } else {
-                  alert('Failed to delete account');
-                }
-              } catch (error) {
-                alert('Error occurred while deleting account');
-              }
+            try {
+                await axios.post(
+                    "http://localhost:4000/api/Login/logout"
+                );
+
+                localStorage.removeItem("guideId");
+                localStorage.removeItem("guideName");
+                localStorage.removeItem("userID");
+
+                navigate("/login");
+
+            } catch (error) {
+                console.error("Logout failed");
             }
-          };
+        };
           
     return (
         <div class="mainSideNavr">
