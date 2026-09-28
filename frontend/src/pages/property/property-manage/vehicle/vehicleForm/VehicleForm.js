@@ -91,8 +91,6 @@ function VehicleForm({ vehicle, type, getAllVehicle }) {
             data.append(key, formData[key]);
         }
 
-        data.append("userId", localStorage.getItem("userID")); 
-
         axios.post("http://localhost:4000/api/vehicle", data, {
             headers: { "Content-Type": "multipart/form-data" }
         })
@@ -112,8 +110,6 @@ function VehicleForm({ vehicle, type, getAllVehicle }) {
         for (const key in formData) {
             data.append(key, formData[key]);
         }
-
-        data.append("userId", localStorage.getItem("userID")); 
 
         axios.put(`http://localhost:4000/api/vehicle/${vehicle.V_Id}`, data, {
             headers: { "Content-Type": "multipart/form-data" }

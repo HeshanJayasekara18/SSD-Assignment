@@ -19,8 +19,7 @@ const {
     positiveInt,
     idRule,
     body,
-    param,
-    query
+    param
 } = require('../middleware/validators');
 
 // Note: these routes accept multipart/form-data, so numeric fields arrive as
@@ -34,8 +33,7 @@ const createRules = [
     positiveNumber('price_day', { max: 10000000, label: 'Daily price' }),
     positiveNumber('price_month', { max: 100000000, label: 'Monthly price' }),
     positiveInt('bed', { min: 1, max: 50, label: 'Beds' }),
-    positiveInt('max_occupancy', { min: 1, max: 100, label: 'Max occupancy' }),
-    idRule('userId', body, { label: 'User ID' })
+    positiveInt('max_occupancy', { min: 1, max: 100, label: 'Max occupancy' })
 ];
 
 const updateRules = [
@@ -75,9 +73,6 @@ router.delete(
 router.post(
     '/getHotelRoomById',
     authenticateUser,
-    // The handler reads req.query.userId, so validate it there.
-    [idRule('userId', query, { label: 'User ID' })],
-    validate,
     getAllHotelRoomByUserId
 );
 

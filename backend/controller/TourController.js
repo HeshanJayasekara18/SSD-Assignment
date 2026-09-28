@@ -21,35 +21,106 @@ const getTour = async (req, res) => {
 
 const addTour = async (req, res) => {
     try {
-        const newTour = await Tour.create(req.body); // Renamed variable to 'newTour'
-        res.status(200).json(newTour);
+        const tourData = {
+            ...req.body,
+
+            // Owner must come from authenticated identity
+            userID: req.user.userID
+        };
+
+        const newTour = await Tour.create(tourData);
+
+        return res.status(201).json(newTour);
+
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        return res.status(500).json({
+            message: error.message
+        });
     }
 };
 
 const updateTour = async (req, res) => {
-    const tourID = req.params.id;
-    const body = req.body;
     try {
+        const tourID = req.params.id;
+
+        const tour = await Tour.findOne({
+            tourID: tourID
+        });
+
+        if (!tour) {
+            return res.status(404).json({
+                message: "Tour not found"
+            });
+        }
+
+        if (tour.userID !== req.user.userID) {
+            return res.status(403).json({
+                message: "Access denied"
+            });
+        }
+
+        const updateData = {
+            ...req.body
+        };
+
+        // Protected fields cannot be modified by the client
+        delete updateData.userID;
+        delete updateData.tourID;
+
         const updatedTour = await Tour.findOneAndUpdate(
-            { tourID: tourID },
-            body,
-            { new: true, runValidators: true }
-        ); // Fixed model reference and variable name
-        res.status(200).json(updatedTour);
+            {
+                tourID: tourID,
+                userID: req.user.userID
+            },
+            updateData,
+            {
+                new: true,
+                runValidators: true
+            }
+        );
+
+        return res.status(200).json(updatedTour);
+
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        return res.status(500).json({
+            message: error.message
+        });
     }
 };
 
 const deleteTour = async (req, res) => {
-    const tourID = req.params.id;
     try {
-        const deletedTour = await Tour.findOneAndDelete({ tourID: tourID }); // Renamed variable to 'deletedTour'
-        res.status(200).json(deletedTour);
+        const tourID = req.params.id;
+
+        const tour = await Tour.findOne({
+            tourID: tourID
+        });
+
+        if (!tour) {
+            return res.status(404).json({
+                message: "Tour not found"
+            });
+        }
+
+        if (tour.userID !== req.user.userID) {
+            return res.status(403).json({
+                message: "Access denied"
+            });
+        }
+
+        await Tour.findOneAndDelete({
+            tourID: tourID,
+            userID: req.user.userID
+        });
+
+        return res.status(200).json({
+            message: "Tour deleted successfully"
+        });
+
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        return res.status(500).json({
+            message: error.message
+        });
     }
 };
 

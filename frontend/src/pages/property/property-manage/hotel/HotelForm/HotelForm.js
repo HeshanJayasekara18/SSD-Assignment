@@ -100,7 +100,6 @@ function HotelForm({ hotelRoom, type, getAllHotelRoom }) {
         data.append(key, formData[key]);
     }
 
-    data.append("userId", localStorage.getItem("userID")); 
     axios
       .post("http://localhost:4000/api/hotelRoom", data, {
         headers: { "Content-Type": "multipart/form-data" },
@@ -123,7 +122,6 @@ function HotelForm({ hotelRoom, type, getAllHotelRoom }) {
         data.append(key, formData[key]);
     }
 
-    data.append("userId", localStorage.getItem("userID")); 
 
     axios
       .put(`http://localhost:4000/api/hotelRoom/${hotelRoom.HR_Id}`, data, {
