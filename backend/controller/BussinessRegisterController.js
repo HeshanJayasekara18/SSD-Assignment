@@ -4,6 +4,7 @@ const Bussiness = require('../model/Bussiness');
 const BussinessAgent = require('../model/BussinessAgent');
 const generateToken = require("../utils/generateToken");
 const setAuthCookie = require("../utils/setAuthCookie");
+const { loginLimiter } = require("../middleware/rateLimiter");
 
 
 const register = async (req, res) => {

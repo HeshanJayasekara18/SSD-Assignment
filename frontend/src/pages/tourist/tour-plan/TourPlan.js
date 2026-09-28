@@ -174,8 +174,7 @@ const TourPlan = () => {
         destination: destinationList,
         start_date: dateRange[0].toDate(),
         end_date: dateRange[1].toDate(),
-        touristID: touristID,
-        userID: userID
+        touristID: touristID
       };
       
       console.log("Sending tour data:", tourData);

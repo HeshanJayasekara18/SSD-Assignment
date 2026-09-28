@@ -8,6 +8,7 @@ const {
   } = require('../controller/BussinessRegisterController');
 
 const validate = require('../middleware/validate');
+const { loginLimiter } = require("../middleware/rateLimiter");
 const {
     emailRule,
     passwordRule,
@@ -43,6 +44,7 @@ router.get('/', authenticateUser,[idRule('B_Id', query, { label: 'Business ID' }
 
 router.post(
     '/login',
+    loginLimiter,
     [
         emailRule('email'),
         body('password')
