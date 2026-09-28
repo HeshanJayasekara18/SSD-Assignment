@@ -42,7 +42,7 @@ const getVehicle = async (req, res) => {
 
 const addVehicle = async (req, res) => {
     try {
-        const { B_Id, modelName, seats, fuelType, transmission, doors, status, priceDay, priceMonth ,userId} = req.body;
+        const { B_Id, modelName, seats, fuelType, transmission, doors, status, priceDay, priceMonth} = req.body;
 
         if (!req.file) {
             return res.status(400).json({ message: "Image is required" });
@@ -63,7 +63,7 @@ const addVehicle = async (req, res) => {
                 data: req.file.buffer, // Store binary data
                 contentType: req.file.mimetype
             },
-            userId
+             userId: req.user.userID
         });
 
         await vehicle.save();
@@ -88,9 +88,28 @@ const updateVehicle = async (req, res) => {
             };
         }
 
+        const vehicle = await Vehicle.findOne({
+            V_Id: id
+        });
+
+        if (!vehicle) {
+            return res.status(404).json({
+                message: "Vehicle not found"
+            });
+        }
+
+         if (vehicle.userId !== req.user.userID) {
+            return res.status(403).json({
+                message: "Access denied"
+            });
+        }
+
         // Update the vehicle based on V_Id
         const updatedVehicle = await Vehicle.findOneAndUpdate(
-            { V_Id: id },  // Query by V_Id instead of _id
+            { 
+                V_Id: id ,
+                userId: req.user.userID
+            }, 
             updateData,
             { new: true, runValidators: true }
         );
@@ -98,6 +117,7 @@ const updateVehicle = async (req, res) => {
         if (!updatedVehicle) {
             return res.status(404).json({ message: "Vehicle not found" });
         }
+
 
         res.status(200).json({ message: "Vehicle updated successfully", updatedVehicle });
 
@@ -111,7 +131,7 @@ const updateVehicle = async (req, res) => {
 const getAllVehicleByUserId = async (req, res) => {    
 
     try {
-        const vehicles = await Vehicle.find({userId:req.query.userId});
+        const vehicles = await Vehicle.find({userId: req.user.userID});
 
         // Convert image buffer to Base64
         const vehiclesWithImages = vehicles.map(vehicle => ({
@@ -170,8 +190,30 @@ const getAllVehicle = async (req, res) => {
 const deleteVehicle = async (req,res) => {
     const V_Id = req.params.id;  
     try{
-        const deleteVehicle = await Vehicle.findOneAndDelete({ V_Id: V_Id });
-        res.status(200).json(deleteVehicle);
+        const vehicle = await Vehicle.findOne({
+            V_Id: V_Id
+        });
+
+        if (!vehicle) {
+            return res.status(404).json({
+                message: "Vehicle not found"
+            });
+        }
+
+        if (vehicle.userId !== req.user.userID) {
+            return res.status(403).json({
+                message: "Access denied"
+            });
+        }
+        await Vehicle.findOneAndDelete({
+            V_Id: V_Id,
+            userId: req.user.userID
+        });
+
+        return res.status(200).json({
+            message: "Vehicle deleted successfully"
+        });
+
     }catch(error){
         res.status(500).json({message:error.message});
     }

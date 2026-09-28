@@ -196,6 +196,7 @@ function Homepage() {
       const response = await axios.post('http://localhost:4000/api/tourPackage', formDataToSend, {
         headers: {
           'Content-Type': 'multipart/form-data', // Required for file uploads
+          Authorization: `Bearer ${localStorage.getItem('token')}`
         },
       });
   
