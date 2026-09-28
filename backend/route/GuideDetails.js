@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const GuideProfileController = require('../controller/GuideProfileController');
 const upload = require("../middleware/upload");
-const { authenticateUser } = require("../middleware/auth");
+const { authenticateUser,authorize } = require("../middleware/auth");
 
 const validate = require('../middleware/validate');
 const {
@@ -37,11 +37,12 @@ const profileRules = [
     positiveNumber('amount', { max: 10000000, label: 'Amount' })
 ];
 
-router.get('/', authenticateUser, GuideProfileController.getDashboardStats);
+router.get('/', authenticateUser,authorize("TourGuide"), GuideProfileController.getDashboardStats);
 
 router.post(
     '/profile',
     authenticateUser,
+    authorize("TourGuide", "Admin"),
     upload.single("profileImage"),
     [mongoIdRule('guideId', body), ...profileRules],
     validate,
@@ -58,6 +59,7 @@ router.get(
 router.put(
     '/profile/:guideId',
     authenticateUser,
+     authorize("TourGuide"),
     upload.single("profileImage"),
     [
         mongoIdRule('guideId', param),
@@ -79,6 +81,7 @@ router.put(
 router.delete(
     '/profile/:guideId',
     authenticateUser,
+     authorize("TourGuide", "Admin"),
     [mongoIdRule('guideId', param)],
     validate,
     GuideProfileController.deleteProfile
