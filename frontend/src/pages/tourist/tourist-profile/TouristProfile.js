@@ -10,8 +10,9 @@ const TouristProfile = () => {
     timeZone: '+5 GMT',
     phone: '',
     email: '',
-    country: 'United States'
+    country: 'Not Specified'
   });
+  const [isGoogleUser, setIsGoogleUser] = useState(false);
 
   // State for tracking which fields are being edited
   const [editableFields, setEditableFields] = useState({
@@ -52,12 +53,7 @@ const TouristProfile = () => {
           return;
         }
         
-        // Fixed: Corrected the axios get request syntax
-        const response = await axios.get(`/api/tourist/${touristID}`, {
-          headers: {
-            'user-id': userID
-          }
-        });
+        const response = await axios.get(`http://localhost:4000/api/Tourist/${touristID}`);
       
         const touristData = response.data;
         
@@ -66,6 +62,10 @@ const TouristProfile = () => {
           setError('No profile data found.');
           setLoading(false);
           return;
+        }
+
+        if (touristData.authProvider === 'google') {
+          setIsGoogleUser(true);
         }
         
         // Split fullname into firstName and lastName
@@ -82,9 +82,9 @@ const TouristProfile = () => {
           firstName,
           lastName,
           timeZone: touristData.timeZone || '+5 GMT',
-          phone: touristData.mobile_number ? touristData.mobile_number.toString() : '',
+          phone: touristData.mobile_number ? touristData.mobile_number.toString() : 'Not Specified',
           email: touristData.email || '',
-          country: touristData.country || 'United States'
+          country: touristData.country || 'Not Specified'
         });
         
         setLoading(false);
@@ -224,11 +224,7 @@ const TouristProfile = () => {
       }
       
       // Send update to backend
-      await axios.put(`/api/tourists/${touristID}`, updateData, {
-        headers: {
-          'user-id': userID
-        }
-      });
+      await axios.put(`http://localhost:4000/api/Tourist/${touristID}`, updateData);
       
       // Also update email in User model if email is being changed
       if (field === 'email') {
@@ -256,10 +252,16 @@ const TouristProfile = () => {
   };
 
   // Handle logout
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    try {
+      await axios.post('http://localhost:4000/api/Login/logout');
+    } catch (e) {
+      console.error('Logout error:', e);
+    }
     // Clear local storage
     localStorage.removeItem('touristID');
     localStorage.removeItem('userID');
+    localStorage.removeItem('fullname');
     
     // Redirect to login page
     window.location.href = '/login';
@@ -303,9 +305,23 @@ const TouristProfile = () => {
               {formData.lastName && formData.lastName[0]}
             </div>
           </div>
-          <button className="tprofile-password-change-btn" onClick={() => setShowPasswordModal(true)}>
-            Change Password
-          </button>
+          {isGoogleUser ? (
+            <div style={{
+              marginTop: '1rem',
+              padding: '0.5rem 0.75rem',
+              fontSize: '0.8rem',
+              color: '#475569',
+              backgroundColor: '#f1f5f9',
+              borderRadius: '6px',
+              textAlign: 'center'
+            }}>
+              Signed in with Google
+            </div>
+          ) : (
+            <button className="tprofile-password-change-btn" onClick={() => setShowPasswordModal(true)}>
+              Change Password
+            </button>
+          )}
         </div>
 
         <div className="tprofile-main">
