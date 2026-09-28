@@ -3,7 +3,7 @@
 
 const express = require('express');
 const router = express.Router();
-const { authenticateUser } = require("../middleware/auth");
+const { authenticateUser,authorize } = require("../middleware/auth");
 const {
     getAllTourist,
     getTourist,
@@ -14,8 +14,8 @@ const {
 
 router.get('/', getAllTourist);
 router.get('/:id', getTourist);    
-router.post('/',authenticateUser, addTourist);      
-router.put('/:id', authenticateUser,updateTourist); 
-router.delete('/:id', authenticateUser,deleteTourist); 
+router.post('/',authenticateUser, ("Admin, Tourist"),addTourist);      
+router.put('/:id', authenticateUser,("Admin, Tourist"),updateTourist); 
+router.delete('/:id', authenticateUser,authorize("Admin, Tourist"),deleteTourist); 
 
 module.exports = router;
