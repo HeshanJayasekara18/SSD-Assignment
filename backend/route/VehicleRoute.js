@@ -18,8 +18,7 @@ const {
     positiveInt,
     idRule,
     body,
-    param,
-    query
+    param
 } = require('../middleware/validators');
 const { authenticateUser, authorize } = require('../middleware/auth');
 
@@ -80,9 +79,6 @@ router.delete(
 router.post(
     '/getVehicleById',
     authenticateUser,
-    // The handler reads req.query.userId, so validate it there.
-    [idRule('userId', query, { label: 'User ID' })],
-    validate,
     getAllVehicleByUserId
 );
 

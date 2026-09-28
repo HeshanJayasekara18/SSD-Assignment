@@ -10,15 +10,13 @@ function HotelPage() {
   const [open, setOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState(""); 
 
-  const userId = localStorage.getItem("userID");
-
   useEffect(() => {
     getAllHotelRoom();
   }, []);
 
   const getAllHotelRoom = () => {
     axios
-      .post(`http://localhost:4000/api/hotelRoom/getHotelRoomById?userId=${userId}`)
+      .post(`http://localhost:4000/api/hotelRoom/getHotelRoomById`)
       .then((response) => {
         console.log(response.data);
         setHotelData(response.data || []); // if null, set empty array
