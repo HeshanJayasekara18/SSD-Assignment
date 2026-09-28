@@ -60,4 +60,61 @@ const assertBookingParticipant = async (identity, bookingId, user) => {
     return { ok: true, booking };
 };
 
-module.exports = { resolveChatIdentity, assertBookingParticipant };
+// Security (V-24): resolves the authenticated user's business identity. Used to
+// decide who may create, update or delete vehicles and hotel rooms. The B_Id is
+// looked up from the signed JWT through the database, never read from the
+// request, so a forged B_Id in the body/query/params proves nothing.
+const resolveBusinessIdentity = async (user) => {
+    if (!user || !user.userID) {
+        return null;
+    }
+
+    const agent = await BussinessAgent.findOne({ userID: user.userID });
+    if (!agent) {
+        return null;
+    }
+
+    const business = await Bussiness.findOne({ BA_Id: agent.BA_Id });
+    if (!business) {
+        return null;
+    }
+
+    return { B_Id: business.B_Id, BA_Id: agent.BA_Id, userID: user.userID };
+};
+
+// Security (V-24): loads a resource and confirms the caller may manage it.
+//   - missing resource            -> 404
+//   - caller has no business      -> 403
+//   - resource owned by another   -> 403
+// Admins bypass the ownership comparison, matching the existing application
+// design where administrators manage commercial data.
+const assertResourceOwner = async (Model, query, user, { ownerField = 'B_Id' } = {}) => {
+    const resource = await Model.findOne(query);
+
+    if (!resource) {
+        return { ok: false, status: 404, message: 'Resource not found' };
+    }
+
+    if (user && user.role === 'Admin') {
+        return { ok: true, resource };
+    }
+
+    const identity = await resolveBusinessIdentity(user);
+
+    if (!identity) {
+        return { ok: false, status: 403, message: 'You are not authorized to manage this resource' };
+    }
+
+    if (resource[ownerField] !== identity[ownerField]) {
+        return { ok: false, status: 403, message: 'You are not authorized to manage this resource' };
+    }
+
+    return { ok: true, resource, identity };
+};
+
+module.exports = {
+    resolveChatIdentity,
+    assertBookingParticipant,
+    resolveBusinessIdentity,
+    assertResourceOwner
+};

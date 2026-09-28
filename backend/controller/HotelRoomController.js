@@ -26,7 +26,7 @@ const pickHotelRoomFields = (source) => {
 
 const addHotelRoom = async (req, res) => {
     try {
-        const { B_Id, name, description, quantity, availability, price_day, price_month, bed, max_occupancy,userId } = req.body;
+        const { B_Id, name, description, quantity, availability, price_day, price_month, bed, max_occupancy} = req.body;
 
         if (!req.file) {
             return res.status(400).json({ message: "Image is required" });
@@ -47,7 +47,7 @@ const addHotelRoom = async (req, res) => {
                 data: req.file.buffer, // Store binary data
                 contentType: req.file.mimetype
             },
-            userId
+             userId: req.user.userID
         });
 
         await hotelRoom.save();
@@ -60,8 +60,7 @@ const addHotelRoom = async (req, res) => {
 const getAllHotelRoomByUserId = async (req, res) => {
     try {
 
-        console.log("User IDhgfh\:", req.query.userId); 
-        const rooms = await HotelRoom.find({userId:req.query.userId});
+        const rooms = await HotelRoom.find({userId: req.user.userID});
 
         // Convert image buffer to Base64
         const roomsWithImages = rooms.map(room => ({
@@ -118,22 +117,52 @@ const getAllHotelRoom = async (req, res) => {
 };
 
 
-const getHotelRoom = async (req,res) => {
-    try{
-        const { HR_Id } = req.params.id;
-        const room = await HotelRoom.findOne({ HR_Id: HR_Id });
-        res.status(200).json(room);
+const getHotelRoom = async (req, res) => {
+    try {
 
-    }catch (error){
-        res.status(500).json ({message:error.message});
+        const HR_Id = req.params.id;
+
+        const room = await HotelRoom.findOne({
+            HR_Id: HR_Id
+        });
+
+        if (!room) {
+            return res.status(404).json({
+                message: "Hotel room not found"
+            });
+        }
+
+        return res.status(200).json(room);
+
+    } catch (error) {
+
+        return res.status(500).json({
+            message: error.message
+        });
     }
-}
+};
 
 const updateHotelRoom = async (req, res) => {
     try {
         const { id } = req.params; // HR_Id
-        // Security: whitelist writable fields so a client cannot set HR_Id, B_Id
-        // ownership or any other field by adding it to the request body.
+
+        const room = await HotelRoom.findOne({
+            HR_Id: id
+        });
+
+        if (!room) {
+            return res.status(404).json({
+                message: "Hotel room not found"
+            });
+        }
+
+        // Object-level authorization
+        if (room.userId !== req.user.userID) {
+            return res.status(403).json({
+                message: "Access denied"
+            });
+        }
+
         const updateData = pickHotelRoomFields(req.body);
 
         // If an image is uploaded, handle the image data similarly to how it is handled for the vehicle update
@@ -146,7 +175,7 @@ const updateHotelRoom = async (req, res) => {
 
         // Update the hotel room based on HR_Id
         const updatedHotelRoom = await HotelRoom.findOneAndUpdate(
-            { HR_Id: id },  // Query by HR_Id instead of _id
+            { HR_Id: id, userId: req.user.userID }, 
             updateData,
             { new: true, runValidators: true }  // Ensures the updated data is validated
         );
@@ -168,15 +197,45 @@ const updateHotelRoom = async (req, res) => {
     }
 };
 
-const deleteHotelRoom= async (req,res) => {
-    const HR_Id = req.params.id;  
-    try{
-        const deleteHotelRoom = await HotelRoom.findOneAndDelete({ HR_Id: HR_Id });
-        res.status(200).json(deleteHotelRoom);
-    }catch(error){
-        res.status(500).json({message:error.message});
+const deleteHotelRoom = async (req, res) => {
+
+    const HR_Id = req.params.id;
+
+    try {
+
+        const room = await HotelRoom.findOne({
+            HR_Id: HR_Id
+        });
+
+        if (!room) {
+            return res.status(404).json({
+                message: "Hotel room not found"
+            });
+        }
+
+        // Object-level authorization
+        if (room.userId !== req.user.userID) {
+            return res.status(403).json({
+                message: "Access denied"
+            });
+        }
+
+        await HotelRoom.findOneAndDelete({
+            HR_Id: HR_Id,
+            userId: req.user.userID
+        });
+
+        return res.status(200).json({
+            message: "Hotel room deleted successfully"
+        });
+
+    } catch (error) {
+
+        return res.status(500).json({
+            message: error.message
+        });
     }
-}
+};
 
 module.exports = {
     getAllHotelRoom,
