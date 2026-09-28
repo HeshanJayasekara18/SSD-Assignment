@@ -39,7 +39,8 @@ const check = (name, actual, expected) => {
 
 const call = async (method, path, { body, auth } = {}) => {
     const headers = {};
-    if (auth) headers.Authorization = `Bearer ${auth}`;
+    // Auth travels in an httpOnly cookie since the JWT-cookie migration.
+    if (auth) headers.Cookie = `accessToken=${auth}`;
     if (body !== undefined) headers['Content-Type'] = 'application/json';
 
     const res = await fetch(BASE + path, {
@@ -68,7 +69,9 @@ const run = async () => {
             fullname: `V20 ${label}`,
             email: `v20-${label}-${STAMP}@test.com`,
             mobile_number: 771234567,
-            userID
+            password: 'x',
+            userID,
+            password: 'x'
         });
         const booking = await Booking.create({
             name: `V20 ${label} booking`,
@@ -85,9 +88,10 @@ const run = async () => {
             B_Id: `biz-${label}-${STAMP}`
         });
         const token = jwt.sign(
-            { user: { userID, email: tourist.email, role: 'Tourist' } },
+            { userID, role: 'Tourist' },
             process.env.JWT_SECRET,
-            { expiresIn: '1h' }
+            { algorithm: 'HS256', expiresIn: '1h', issuer: 'ceylongo-api',
+              audience: 'ceylongo-client', subject: userID }
         );
         return { tourist, booking, token, userID };
     };
