@@ -1,5 +1,7 @@
 const express = require('express');
 const router = express.Router();
+const { authenticateUser, authorize } = require("../middleware/auth");
+const validate = require('../middleware/validate');
 
 const {
   Touristregister,
@@ -8,9 +10,41 @@ const {
   deleteTourist
 } = require('../controller/TouristRegisterController');
 
-router.post('/', Touristregister);
-router.get('/', getTouristDetails);
-router.get('/all', getAllTourists);
-router.delete('/:id', deleteTourist);
+const {
+  emailRule,
+  passwordRule,
+  requiredText,
+  phoneRule,
+  idRule,
+  mongoIdRule,
+  query
+} = require('../middleware/validators');
+
+
+router.post(
+  '/',
+  [
+    requiredText('fullname', { max: 100, label: 'Full name' }),
+    emailRule('email'),
+    passwordRule('password'),
+    requiredText('country', { max: 100, label: 'Country' }),
+    phoneRule('mobile_number')
+  ],
+  validate,
+  Touristregister
+);
+
+router.get('/', authenticateUser,[idRule('touristID', query, { label: 'Tourist ID' })], validate, getTouristDetails);
+
+router.get('/all', authenticateUser, authorize('Admin'), getAllTourists);
+
+router.delete(
+  '/:id',
+  authenticateUser,
+  authorize('Admin'),
+  [mongoIdRule('id')],
+  validate,
+  deleteTourist
+);
 
 module.exports = router;

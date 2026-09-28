@@ -1,6 +1,7 @@
 
 import weblogo from '../../../images/logo.png';
 import './BookingNavAfterLog.css';
+import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import React, { useState, useRef, useEffect } from 'react';
 
@@ -31,6 +32,22 @@ const BookingNavAfterLog = () => {
   }, []);
 
 
+  const handleLogout = async () => {
+    try {
+        await axios.post(
+            "http://localhost:4000/api/Login/logout"
+        );
+
+        localStorage.removeItem("userID");
+        localStorage.removeItem("touristID");
+        localStorage.removeItem("fullname");
+
+        navigate("/login");
+
+    } catch (error) {
+        console.error("Logout failed");
+    }
+};
   
   return (
     <div className="landingLandingPage-h">
@@ -57,7 +74,7 @@ const BookingNavAfterLog = () => {
             <a href="#"onClick={() => navigate('./Profile')}>Your Profile</a>
             <a href="#" onClick={() => navigate('./booking-view')}>Your Bookings</a>
             <a href="#">Your Payments</a>
-            <a href="#" onClick={() => navigate('/#')}>Sign Out</a>
+            <a href="#" onClick={handleLogout}>Sign Out</a>
             </div>
         )}
         </div>

@@ -1,6 +1,8 @@
+import { GoogleOAuthProvider } from '@react-oauth/google';
 import logo from './logo.svg';
 import './App.css';
 import 'leaflet/dist/leaflet.css';
+
 
 import {BrowserRouter,Route,Routes}from 'react-router-dom';
 import PropertySignup from './pages/property/property-signup/PropertySignup';
@@ -41,7 +43,8 @@ import TourGuideProfile from './pages/tour-guide/tourguide-profile/TourGuideProf
 import TourGuideSignUp from './pages/tour-guide/tourguide-signup/TourGuideSignUp';
 import TourGuide from './pages/tour-guide/TourGuide';
 import ChatManage from './pages/property/chat-manage/Chat';
-
+import PaymentSuccess from './pages/payment-result/PaymentSuccess';
+import PaymentCancelled from './pages/payment-result/PaymentCancelled';
 
 import FeedbackForm from './common/feedback-rating/feedback-page/FeedbackForm';
 import TouristFeedbackDisplay from './common/feedback-rating/feedback-display/TouristFeedbackDisplay';
@@ -51,20 +54,20 @@ import TouristFeedbackDisplay from './common/feedback-rating/feedback-display/To
 import Gallary from './pages/landing/gallary/Gallary'
 
 import LandingAfterLogin from './pages/tourist/landing-after-login/LandingAfterLogin';
+
 function App() {
   return (
-    
+    <GoogleOAuthProvider clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID}>
         <BrowserRouter>
           <Routes>
             <Route path="/tourist-signup" element={<TouristSignup/>}/>
             <Route path="/property-signup" element={<PropertySignup/>}/>
             <Route path="/login" element={<MainLogin/>}/>
+            <Route path="/payment-success" element={<PaymentSuccess/>}/>
+            <Route path="/payment-cancelled" element={<PaymentCancelled/>}/>
             <Route path="/" element={<LandingPages/>}/>
             <Route path='/tourguide-signup' element={<TourGuideSignUp/>}/>
 
-            
-            
-            
             <Route
                path='/admin'
                element={<Admin/>}>
@@ -75,8 +78,6 @@ function App() {
                 <Route path='Receipt' element={<Receipt/>}/>
                 <Route path='PaymentManagement' element={<PaymentManagement/>}/>
                 <Route path='feedback-manage' element={<FeedbackManagement/>}/>
-
-               
             </Route>
 
             <Route
@@ -112,19 +113,15 @@ function App() {
                 <Route path='gallary' element={<Gallary/>}/>
             </Route>
             
-            
-
              <Route
                 path='/TourGuide'
                 element={<TourGuide/>}>
                 <Route index element={<TourGuideDashboard/>}/>
                  <Route path='profile' element={<TourGuideProfile/>}/>
               </Route>
-            
-          
           </Routes>
         </BrowserRouter>
-  
+    </GoogleOAuthProvider>
   )
 }
 

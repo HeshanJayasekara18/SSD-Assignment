@@ -34,7 +34,7 @@ const Receipt = () => {
                 <p><strong>Customer:</strong> {receipt.customerName}</p>
                 <p><strong>Email:</strong> {receipt.customerEmail}</p>
                 <p><strong>Phone:</strong> {receipt.customerPhone}</p>
-                <p><strong>Payment Method:</strong> {receipt.paymentMethod}</p>
+                <p><strong>Payment Method:</strong> {receipt.cardBrand && receipt.cardLast4 ? `${receipt.cardBrand} **** ${receipt.cardLast4}` : receipt.paymentMethod}</p>
                 <p><strong>Status:</strong> {receipt.paymentStatus}</p>
                 <p><strong>Travelers:</strong> {receipt.numberOfTravelers}</p>
                 <p><strong>Price per person:</strong> ${receipt.pricePerPerson}</p>

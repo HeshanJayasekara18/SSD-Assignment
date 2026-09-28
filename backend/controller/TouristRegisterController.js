@@ -1,3 +1,4 @@
+const bcrypt = require("bcrypt");
 const User = require ('../model/User');
 const Tourist = require ('../model/Tourist'); 
 const Tour = require ('../model/Tour');
@@ -13,10 +14,14 @@ const Touristregister = async (req, res) => {
             return res.status(400).json({ message: "Email is already registered. Please use a different email." });
         }
 
+        const saltRounds = 12;
+        const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+        // Security: role is fixed by the endpoint, never read from req.body.
         const user = await User.create({
             username: email,
-            password: password,
-            role: 'Tourist',
+            password: hashedPassword,
+            role: "Tourist",
             email
         });
 
@@ -25,27 +30,43 @@ const Touristregister = async (req, res) => {
             username: email,
             fullname: fullname,
             email,
+            // The Tourist model now requires a password (select: false). Store the
+            // same bcrypt hash as the User record; authentication still happens
+            // against User, so this is never used to log in on its own.
+            password: hashedPassword,
             country,
             mobile_number,
-            password: password,
             userID: user.userID
         });
 
         res.status(201).json({
             message: "User and Tourist created successfully",
-            user,
-            tourist
+            user: {
+                id: user._id,
+                username: user.username,
+                email: user.email,
+                role: user.role
+            },
+
+            tourist: {
+                id: tourist._id,
+                touristID: tourist.touristID,
+                fullname: tourist.fullname,
+                email: tourist.email,
+                country: tourist.country,
+                mobile_number: tourist.mobile_number
+            }
         });
 
 
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({ message: "Internal server error" });
     }
 };
 
 const getTouristDetails = async (req, res) => {
     try {
-        const { TtouristID_Id } = req.query;      
+        const { touristID } = req.query;
         const tourist = await Tourist.findOne({ touristID: touristID });
         if (!tourist) {
             return res.status(404).json({ message: "Tourist not found" });
@@ -62,7 +83,7 @@ const getTouristDetails = async (req, res) => {
             usertourist
          });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({message: "Internal server error" });
     }
 }
 // Add to TouristRegisterController.js

@@ -1,0 +1,77 @@
+
+[1m  V-13 — Insufficient server-side input validation[0m
+[90m  Live demonstration against http://localhost:4055[0m
+
+[90m────────────────────────────────────────────────────────────────[0m
+[1m[36m  ATTACK 1[0m  [1mAnyone can make themselves an administrator[0m
+[90m────────────────────────────────────────────────────────────────[0m
+
+   The signup form in the browser only ever offers a business account.
+   But the form is not what talks to the server — this is:
+
+[33m   What an attacker sends:[0m
+
+     [2mcurl -X POST http://localhost:4055/api/bussinessregister \[0m
+     [2m  -H "Content-Type: application/json" \[0m
+     [2m  -d '{"email":"viva-attacker-1790416748130@evil.com",[0m
+     [2m       "password":"password123",[0m
+     [2m       [31m"role":"Admin"[0m[2m,[0m
+     [2m       "fullName":"Attacker", "contact":"0771234567",[0m
+     [2m       "businessName":"Evil Co", "businessAddress":"x",[0m
+     [2m       "businessType":"hotel"}'[0m
+
+   [1mWhat the database actually stored:[0m
+
+     role = [32m[1m"Bussiness"[0m
+
+   Result: [32m[1mBLOCKED[0m
+   The injected role was discarded. The endpoint decides the role,
+   not the request.
+
+[90m────────────────────────────────────────────────────────────────[0m
+[1m[36m  ATTACK 2[0m  [1mAnyone can set a booking price to zero[0m
+[90m────────────────────────────────────────────────────────────────[0m
+
+   First, a normal booking is made through the system — a $349 tour.
+
+     bookingID       = [90m78e1a12e-ab3d-41b8-97bb-b4a2f5f673f8[0m
+     payment_amount  = [1m349[0m
+     touristID       = [1mreal-customer-1790416748130[0m
+
+   Stripe charges whatever this record says. So the attacker edits it:
+
+[33m   What an attacker sends:[0m
+
+     [2mcurl -X PUT http://localhost:4055/api/Booking/78e1a12e-ab3d-41b8-97bb-b4a2f5f673f8 \[0m
+     [2m  -H "Content-Type: application/json" \[0m
+     [2m  -d '{[31m"payment_amount": 0[0m[2m,[0m
+     [2m       [31m"touristID": "attacker"[0m[2m}'[0m
+
+   [1mWhat the database actually stored:[0m
+
+     payment_amount  = [32m[1m349[0m   [32m(unchanged)[0m
+     touristID       = [32m[1mreal-customer-1790416748130[0m   [32m(unchanged)[0m
+
+   Result: [32m[1mBLOCKED[0m
+   Both fields are immutable after creation, so the edit was dropped.
+
+[90m────────────────────────────────────────────────────────────────[0m
+[1m[36m  ATTACK 3[0m  [1mNo login needed to read every customer booking[0m
+[90m────────────────────────────────────────────────────────────────[0m
+
+   These endpoints had no authentication at all.
+
+[33m   What an attacker sends:[0m
+
+     [2mcurl http://localhost:4055/api/Booking     [90m# no token, no password[0m[0m
+
+   [1mServer responded:[0m  [32m[1mHTTP 401[0m
+
+   Result: [32m[1mBLOCKED[0m  — authentication is now required.
+
+[90m────────────────────────────────────────────────────────────────[0m
+  [32m[1m  0 of 3 attacks succeeded — all attacks blocked.[0m
+[90m────────────────────────────────────────────────────────────────[0m
+
+[90m  (demo records cleaned up)[0m
+
