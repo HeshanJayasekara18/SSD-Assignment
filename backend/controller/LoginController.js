@@ -153,6 +153,19 @@ const getCurrentUser = async (req, res) => {
             });
         }
 
+        let touristDetails = null;
+        if (user.role === 'Tourist') {
+            const tourist = await Tourist.findOne({ userID: user.userID });
+            if (tourist) {
+                touristDetails = {
+                    touristID: tourist.touristID,
+                    fullname: tourist.fullname,
+                    country: tourist.country,
+                    mobile_number: tourist.mobile_number,
+                };
+            }
+        }
+
         return res.status(200).json({
             user: {
                 id: user._id,
@@ -160,7 +173,8 @@ const getCurrentUser = async (req, res) => {
                 username: user.username,
                 email: user.email,
                 role: user.role
-            }
+            },
+            touristDetails
         });
 
     } catch (error) {

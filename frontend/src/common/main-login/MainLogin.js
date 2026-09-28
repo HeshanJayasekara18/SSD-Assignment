@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./MainLogin.css";
 import hlogo from '../../images/h-Logo.png'; 
 import hloginimg from '../../images/h-Login-img.jpeg'; 
@@ -8,6 +8,35 @@ import { GoogleLogin } from '@react-oauth/google';
 
 const MainLogin = () => {
   const navigate = useNavigate();
+
+  // Check if user is already authenticated via cookie
+  useEffect(() => {
+    const checkExistingSession = async () => {
+      try {
+        const res = await axios.get('http://localhost:4000/api/Login/me');
+        if (res.status === 200 && res.data.user) {
+          const user = res.data.user;
+          localStorage.setItem("userID", user.userID);
+          if (user.role === 'Admin') {
+            navigate('/admin');
+          } else if (user.role === 'Bussiness') {
+            navigate('/property');
+          } else if (user.role === 'Tourist') {
+            if (res.data.touristDetails) {
+              localStorage.setItem("touristID", res.data.touristDetails.touristID);
+              localStorage.setItem("fullname", res.data.touristDetails.fullname);
+            }
+            navigate('/Tourist');
+          } else if (user.role === 'TourGuide') {
+            navigate('/TourGuide');
+          }
+        }
+      } catch (err) {
+        // No active session
+      }
+    };
+    checkExistingSession();
+  }, [navigate]);
 
   const handleGoogleSuccess = async (credentialResponse) => {
     try {
@@ -20,7 +49,16 @@ const MainLogin = () => {
         localStorage.setItem("userID", response.data.userDetails.userID);
         localStorage.setItem("touristID", response.data.touristDetails.touristID);
         localStorage.setItem("fullname", response.data.touristDetails.fullname);
-        navigate('/Tourist');
+
+        const isProfileIncomplete = !response.data.touristDetails?.mobile_number || 
+          !response.data.touristDetails?.country || 
+          response.data.touristDetails?.country === 'Not Specified';
+
+        if (response.data.isNewUser || isProfileIncomplete) {
+          navigate('/complete-profile');
+        } else {
+          navigate('/Tourist');
+        }
       }
     } catch (error) {
       console.error('Google Auth Error:', error);
