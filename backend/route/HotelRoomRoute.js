@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const { authenticateUser } = require("../middleware/auth");
 const {
     getAllHotelRoom,
     getHotelRoom,
@@ -21,11 +20,14 @@ const {
     body,
     param
 } = require('../middleware/validators');
+const { authenticateUser, authorize } = require('../middleware/auth');
 
 // Note: these routes accept multipart/form-data, so numeric fields arrive as
 // strings. The isInt/isFloat rules below coerce them via toInt()/toFloat().
+// Security (V-24): B_Id and userId are deliberately NOT accepted here. The
+// owning business is derived from the authenticated account in the controller,
+// so a forged ownership field in the request is stripped by `validate`.
 const createRules = [
-    idRule('B_Id', body, { label: 'Business ID' }),
     requiredText('name', { max: 150, label: 'Room name' }),
     requiredText('description', { max: 1000, label: 'Description' }),
     positiveInt('quantity', { min: 1, max: 10000, label: 'Quantity' }),
@@ -51,11 +53,14 @@ router.get('/', getAllHotelRoom);
 
 router.get('/:id', [idRule('id', param, { label: 'Room ID' })], validate, getHotelRoom);
 
-router.post('/', authenticateUser, upload.single("image"), createRules, validate, addHotelRoom);
+// Security (V-24): management operations require a login AND an appropriate
+// role. Per-resource ownership is checked in the controller.
+router.post('/', authenticateUser, authorize('Bussiness', 'Admin'), upload.single("image"), createRules, validate, addHotelRoom);
 
 router.put(
     '/:id',
     authenticateUser,
+    authorize('Bussiness', 'Admin'),
     upload.single("image"),
     [idRule('id', param, { label: 'Room ID' }), ...updateRules],
     validate,
@@ -65,6 +70,7 @@ router.put(
 router.delete(
     '/:id',
     authenticateUser,
+    authorize('Bussiness', 'Admin'),
     [idRule('id', param, { label: 'Room ID' })],
     validate,
     deleteHotelRoom
