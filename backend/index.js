@@ -58,6 +58,7 @@ app.use('/api/sendMail', MailRoute);
 
 app.use('/api/Booking', BookingRoute);
 app.use('/api/Tourist', TouristRoute);
+app.use('/api/tourist', TouristRoute);
 app.use('/api/Tour', TourRoute);
 app.use('/api/Login', LoginRoute);
 app.use('/api/TouristRegister', TouristRegisterRoute);

@@ -28,6 +28,13 @@ const TravelLandingPage1 = () => {
 
   const navigate = useNavigate();
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    if (localStorage.getItem("touristID") || localStorage.getItem("userID")) {
+      setIsLoggedIn(true);
+    }
+  }, []);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -53,8 +60,14 @@ const TravelLandingPage1 = () => {
           <a href="#" className="landingNavLink">Join with us</a>
         </div>
         <div className="landingRegbutton">
-          <button className="landingsignupbutton" onClick={() => navigate('/tourist-signup')}>Sign Up</button>
-          <button className="landinglogbutton" onClick={() => navigate('/login')}>Login</button>
+          {isLoggedIn ? (
+            <button className="landingsignupbutton" onClick={() => navigate('/Tourist')}>Dashboard</button>
+          ) : (
+            <>
+              <button className="landingsignupbutton" onClick={() => navigate('/tourist-signup')}>Sign Up</button>
+              <button className="landinglogbutton" onClick={() => navigate('/login')}>Login</button>
+            </>
+          )}
         </div>
       </nav>
 

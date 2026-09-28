@@ -24,6 +24,26 @@ const TouristSignup = () => {
 
   const navigate = useNavigate();
 
+  // Check if user is already authenticated via cookie
+  useEffect(() => {
+    const checkExistingSession = async () => {
+      try {
+        const res = await axios.get('http://localhost:4000/api/Login/me');
+        if (res.status === 200 && res.data.user?.role === 'Tourist') {
+          if (res.data.touristDetails) {
+            localStorage.setItem("userID", res.data.user.userID);
+            localStorage.setItem("touristID", res.data.touristDetails.touristID);
+            localStorage.setItem("fullname", res.data.touristDetails.fullname);
+          }
+          navigate('/Tourist');
+        }
+      } catch (err) {
+        // No active session
+      }
+    };
+    checkExistingSession();
+  }, [navigate]);
+
   const handleGoogleSuccess = async (credentialResponse) => {
     try {
       // Sending the token to the same endpoint as Login
@@ -37,7 +57,16 @@ const TouristSignup = () => {
         localStorage.setItem("userID", response.data.userDetails.userID);
         localStorage.setItem("touristID", response.data.touristDetails.touristID);
         localStorage.setItem("fullname", response.data.touristDetails.fullname);
-        navigate('/Tourist');
+
+        const isProfileIncomplete = !response.data.touristDetails?.mobile_number || 
+          !response.data.touristDetails?.country || 
+          response.data.touristDetails?.country === 'Not Specified';
+
+        if (response.data.isNewUser || isProfileIncomplete) {
+          navigate('/complete-profile');
+        } else {
+          navigate('/Tourist');
+        }
       }
     } catch (error) {
       console.error('Google Auth Error:', error);
