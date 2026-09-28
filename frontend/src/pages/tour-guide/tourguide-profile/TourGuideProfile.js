@@ -33,12 +33,9 @@ const TourGuideProfile = () => {
 
   const fetchProfileData = async () => {
     try {
-      const token = localStorage.getItem('token');
       const guideId = localStorage.getItem('guideId');
 
-      const response = await axios.get(`http://localhost:4000/api/GuideDetails/profile/${guideId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await axios.get(`http://localhost:4000/api/GuideDetails/profile/${guideId}`);
 
       const profile = response.data.profile || {};
       const profileImage = profile.profileImage || null;
@@ -121,7 +118,6 @@ const TourGuideProfile = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const token = localStorage.getItem('token');
     const guideId = localStorage.getItem('guideId');
 
     const formData = new FormData();
@@ -144,7 +140,6 @@ const TourGuideProfile = () => {
     try {
       await axios.put(`http://localhost:4000/api/GuideDetails/profile/${guideId}`, formData, {
         headers: {
-          Authorization: `Bearer ${token}`,
           'Content-Type': 'multipart/form-data',
         },
       });

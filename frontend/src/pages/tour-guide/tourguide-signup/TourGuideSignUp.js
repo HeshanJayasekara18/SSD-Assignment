@@ -45,8 +45,7 @@ const TourGuideSignUp = () => {
     try {
       const response = await axios.post('http://localhost:4000/api/TourGuide/register', formData);
 
-      // Store token and guide ID in localStorage
-      localStorage.setItem('token', response.data.token);
+      // Store guide ID in localStorage
       localStorage.setItem('guideId', response.data.guideId);
       
       // Set success message
