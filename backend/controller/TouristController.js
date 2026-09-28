@@ -13,23 +13,39 @@ const getAllTourist = async (req, res) => {
 const getTourist = async (req, res) => {
     try {
         const { id } = req.params;
-        const tourist = await Tourist.findOne({ touristID: id });
-        
+
+        const tourist = await Tourist.findOne({
+            touristID: id
+        });
+
         if (!tourist) {
-            return res.status(404).json({ message: 'Tourist not found' });
+            return res.status(404).json({
+                message: "Tourist not found"
+            });
         }
-        
-        res.status(200).json(tourist);
+
+        if (tourist.userID !== req.user.userID) {
+            return res.status(403).json({
+                message: "Access denied"
+            });
+        }
+
+        return res.status(200).json(tourist);
+
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        return res.status(500).json({
+            message: error.message
+        });
     }
-}
+};
 
 const addTourist = async (req, res) => {
     try {  
         // Create a new tourist
         const tourist = await Tourist.create(req.body);
-        res.status(201).json(tourist);
+        const touristObj = tourist.toObject();
+        delete touristObj.password;
+        res.status(201).json(touristObj);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -38,36 +54,87 @@ const addTourist = async (req, res) => {
 const updateTourist = async (req, res) => {
     try {
         const { id } = req.params;
-        const updateTourist = await Tourist.findOneAndUpdate(
-            { touristID: id },
-            req.body,
-            { new: true, runValidators: true }
-        );
 
-        if (!updateTourist) {
-            return res.status(404).json({ message: 'Tourist not found' });
+        const tourist = await Tourist.findOne({
+            touristID: id
+        });
+
+        if (!tourist) {
+            return res.status(404).json({
+                message: "Tourist not found"
+            });
         }
 
-        res.status(200).json(updateTourist);
+        if (tourist.userID !== req.user.userID) {
+            return res.status(403).json({
+                message: "Access denied"
+            });
+        }
+
+        const updateData = {
+            ...req.body
+        };
+
+        // Identity/ownership fields must not be changed by client
+        delete updateData.userID;
+        delete updateData.touristID;
+
+        const updatedTourist = await Tourist.findOneAndUpdate(
+            {
+                touristID: id,
+                userID: req.user.userID
+            },
+            updateData,
+            {
+                new: true,
+                runValidators: true
+            }
+        );
+
+        return res.status(200).json(updatedTourist);
+
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        return res.status(500).json({
+            message: error.message
+        });
     }
-}
+};
 
 const deleteTourist = async (req, res) => {
     try {
         const { id } = req.params;
-        const deletedTourist = await Tourist.findOneAndDelete({ touristID: id });
 
-        if (!deletedTourist) {
-            return res.status(404).json({ message: 'Tourist not found' });
+        const tourist = await Tourist.findOne({
+            touristID: id
+        });
+
+        if (!tourist) {
+            return res.status(404).json({
+                message: "Tourist not found"
+            });
         }
 
-        res.status(200).json(deletedTourist);
+        if (tourist.userID !== req.user.userID) {
+            return res.status(403).json({
+                message: "Access denied"
+            });
+        }
+
+        await Tourist.findOneAndDelete({
+            touristID: id,
+            userID: req.user.userID
+        });
+
+        return res.status(200).json({
+            message: "Tourist deleted successfully"
+        });
+
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        return res.status(500).json({
+            message: error.message
+        });
     }
-}
+};
 
 module.exports = {
     getAllTourist,

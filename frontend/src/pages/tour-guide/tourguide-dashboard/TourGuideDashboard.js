@@ -38,10 +38,7 @@ const TourGuideDashboard = () => {
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
-        const token = localStorage.getItem('token');
-        const response = await axios.get('http://localhost:4000/api/GuideDetails', {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        const response = await axios.get('http://localhost:4000/api/GuideDetails');
         
         setGuideStats(response.data.stats);
         setLoading(false);
@@ -65,7 +62,6 @@ const TourGuideDashboard = () => {
   
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const token = localStorage.getItem('token');
     const guideId = localStorage.getItem('guideId'); 
     const formData = new FormData();
   
@@ -77,7 +73,6 @@ const TourGuideDashboard = () => {
     try {
       await axios.post('http://localhost:4000/api/GuideDetails/profile', formData, {
         headers: {
-          Authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data",
         },
       });

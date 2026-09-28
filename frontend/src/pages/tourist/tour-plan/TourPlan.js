@@ -174,8 +174,7 @@ const TourPlan = () => {
         destination: destinationList,
         start_date: dateRange[0].toDate(),
         end_date: dateRange[1].toDate(),
-        touristID: touristID,
-        userID: userID
+        touristID: touristID
       };
       
       console.log("Sending tour data:", tourData);
@@ -184,7 +183,6 @@ const TourPlan = () => {
       const response = await axios.post("http://localhost:4000/api/tour", tourData, {
         headers: { 
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${localStorage.getItem('token')}`
         }
       });
       

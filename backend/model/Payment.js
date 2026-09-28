@@ -15,16 +15,13 @@ const PaymentSchema = new mongoose.Schema({
     default: () => 'TXN' + Date.now() + Math.floor(Math.random() * 1000), // Unique transaction ID
   },
   fullName: {
-    type: String,
-    required: true
+    type: String
   },
   email: {
-    type: String,
-    required: true
+    type: String
   },
   phone: {
-    type: String,
-    required: true
+    type: String
   },
   packageId: {
     type: String,
@@ -38,23 +35,32 @@ const PaymentSchema = new mongoose.Schema({
     type: Number,
     required: true
   },
-  cardDetails: {
-    cardNumber: {
-      type: String,
-      required: true
-    },
-    expiryDate: {
-      type: String,
-      required: true
-    },
-    cvv: {
-      type: String,
-      required: true
-    }
+  currency: {
+    type: String,
+    required: true,
+    default: 'usd',
+    lowercase: true,
+    trim: true
+  },
+  stripeSessionId: {
+    type: String,
+    index: true
+  },
+  stripePaymentIntentId: {
+    type: String,
+    index: true
+  },
+  cardBrand: {
+    type: String,
+    default: ''
+  },
+  cardLast4: {
+    type: String,
+    default: ''
   },
   status: {
     type: String,
-    enum: ['Pending', 'Completed', 'Failed'],
+    enum: ['Pending', 'Completed', 'Failed', 'Refunded'],
     default: 'Pending'
   },
   createdAt: {

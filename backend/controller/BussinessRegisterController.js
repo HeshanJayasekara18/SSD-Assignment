@@ -1,6 +1,10 @@
+const bcrypt = require("bcrypt");
 const User = require('../model/User');
 const Bussiness = require('../model/Bussiness'); 
 const BussinessAgent = require('../model/BussinessAgent');
+const generateToken = require("../utils/generateToken");
+const setAuthCookie = require("../utils/setAuthCookie");
+const { loginLimiter } = require("../middleware/rateLimiter");
 
 
 const register = async (req, res) => {
@@ -12,11 +16,21 @@ const register = async (req, res) => {
             return res.status(400).json({ message: "Email is already registered. Please use a different email." });
         }
 
+        
+        const saltRounds = 12;
+
+        const hashedPassword = await bcrypt.hash(
+            req.body.password,
+            saltRounds
+        );
+
         // Create User
-        const user = await User.create({          
+        // Security: role is fixed by the endpoint, never read from req.body, so a
+        // client cannot self-register as Admin.
+        const newUser = await User.create({
             username: req.body.email,
-            password: req.body.password, 
-            role: req.body.role,
+            password: hashedPassword,
+            role: 'Bussiness',
             email: req.body.email
         });
 
@@ -25,7 +39,7 @@ const register = async (req, res) => {
             fullname: req.body.fullName, // Corrected property name
             userAddress: req.body.userAddress, // Mapped correctly from frontend
             contact: req.body.contact,
-            userID: user.userID // Use MongoDB's default _id
+            userID: newUser.userID
         });
 
         // Create Business
@@ -39,14 +53,19 @@ const register = async (req, res) => {
         });
 
         res.status(201).json({ 
-            message: "User, Business Agent, and Business created successfully", 
-            user, 
+            message: "User, Business Agent, and Business created successfully",  
+            user: {
+                id: newUser._id,
+                username: newUser.username,
+                email: newUser.email,
+                role: newUser.role
+           },
             businessAgent, 
             business 
         });
 
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({ message: "Internal server error" });
     }
 };
 
@@ -90,23 +109,35 @@ const loginBussiness = async (req, res) => {
         const { email, password } = req.body;
 
         // Check if the user exists
-        const user = await User.findOne({ email });
+        const user = await User.findOne({ email }).select("+password");
 
         if (!user) {
-            return res.status(400).json({ message: "Invalid email or password" });
+            return res.status(401).json({ message: "Invalid email or password" });
         }
 
         // Check if the password is correct
-        const isMatch = await user.comparePassword(password);
+        const isMatch = await bcrypt.compare(password,user.password);
 
         if (!isMatch) {
-            return res.status(400).json({ message: "Invalid email or password" });
+            return res.status(401).json({ message: "Invalid email or password" });
         }
 
-        res.status(200).json({ message: "Login successful", user });
+        const token = generateToken(user);
+        setAuthCookie(res, token);
+
+        res.status(200).json({ 
+            message: "Login successful", 
+            user: {
+                id: user._id,
+                username: user.username,
+                email: user.email,
+                role: user.role
+            },
+
+         });
 
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({ message: "Internal server error" });
     }
 };
 

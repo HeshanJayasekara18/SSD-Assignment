@@ -142,19 +142,3 @@
     }
   }
   
-  /* Card input animation */
-  @keyframes cardShine {
-    0% {
-      background-position: 0% 0%;
-    }
-    100% {
-      background-position: 100% 0%;
-    }
-  }
-  
-  input[name="cardNumber"]:focus {
-    background: linear-gradient(90deg, rgba(255,255,255,1) 0%, rgba(243,244,253,1) 50%, rgba(255,255,255,1) 100%);
-    background-size: 200% 100%;
-    animation: cardShine 2s ease-in-out infinite;
-    border-color: #667eea;
-  }

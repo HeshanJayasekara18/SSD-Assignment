@@ -1,6 +1,9 @@
 // TouristRoute.js
+//const { authenticateUser, authorize } = require('../middleware/auth');
+
 const express = require('express');
 const router = express.Router();
+const { authenticateUser,authorize } = require("../middleware/auth");
 const {
     getAllTourist,
     getTourist,
@@ -11,8 +14,8 @@ const {
 
 router.get('/', getAllTourist);
 router.get('/:id', getTourist);    
-router.post('/', addTourist);      
-router.put('/:id', updateTourist); 
-router.delete('/:id', deleteTourist); 
+router.post('/',authenticateUser, authorize("Admin", "Tourist"),addTourist);      
+router.put('/:id', authenticateUser,authorize("Admin", "Tourist"),updateTourist); 
+router.delete('/:id', authenticateUser,authorize("Admin", "Tourist"),deleteTourist); 
 
 module.exports = router;
