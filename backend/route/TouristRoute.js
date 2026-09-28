@@ -14,8 +14,8 @@ const {
 
 router.get('/', getAllTourist);
 router.get('/:id', getTourist);    
-router.post('/',authenticateUser, ("Admin, Tourist"),addTourist);      
-router.put('/:id', authenticateUser,("Admin, Tourist"),updateTourist); 
-router.delete('/:id', authenticateUser,authorize("Admin, Tourist"),deleteTourist); 
+router.post('/',authenticateUser, authorize("Admin", "Tourist"),addTourist);      
+router.put('/:id', authenticateUser,authorize("Admin", "Tourist"),updateTourist); 
+router.delete('/:id', authenticateUser,authorize("Admin", "Tourist"),deleteTourist); 
 
 module.exports = router;
