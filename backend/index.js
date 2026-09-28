@@ -4,6 +4,7 @@ const cookieParser = require("cookie-parser");
 const cors = require("cors");
 const dotenv = require("dotenv");
 const connectDB = require("./db/db");
+const errorHandler = require('./middleware/errorHandler');
 
 dotenv.config();
 
@@ -74,6 +75,9 @@ app.use('/api/auth/google', GoogleAuthRoute);
 app.get("/", (req, res) => {
     res.send("Hello World");
 });
+
+// Centralized Error Handling Middleware (MUST be registered after all routes)
+app.use(errorHandler);
 
 // Start Server
 app.listen(PORT, () => {

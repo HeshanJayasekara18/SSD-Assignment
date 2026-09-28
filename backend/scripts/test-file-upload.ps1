@@ -12,6 +12,26 @@ function Print-Header($title) {
     Write-Host "################################################################`n" -ForegroundColor DarkGray
 }
 
+# Generate Admin JWT token for authorized endpoint access
+$scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+$backendDir = Split-Path -Parent $scriptDir
+$nodeScript = @"
+const path = require('path');
+require(path.join('$($backendDir.Replace('\', '/'))', 'node_modules', 'dotenv')).config({ path: path.join('$($backendDir.Replace('\', '/'))', '.env') });
+const jwt = require(path.join('$($backendDir.Replace('\', '/'))', 'node_modules', 'jsonwebtoken'));
+const t = jwt.sign(
+    { userID: 'admin-tester', role: 'Admin' },
+    process.env.JWT_SECRET || 'your_jwt_secret',
+    { algorithm: 'HS256', expiresIn: '1h', issuer: 'ceylongo-api', audience: 'ceylongo-client', subject: 'admin-tester' }
+);
+console.log(t);
+"@
+
+$adminToken = (& node -e $nodeScript)
+if ($adminToken) {
+    $adminToken = $adminToken.Trim()
+}
+
 # Create temp attack files
 $tempDir = [System.IO.Path]::GetTempPath()
 $maliciousFile = Join-Path $tempDir "malicious_script.exe"
@@ -31,9 +51,9 @@ Clear-Host
 # ------------------------------------------------------------------------------
 Print-Header "ATTACK 1 - Upload Malicious Executable (.exe) as Tour Image"
 
-Write-Host "$ curl -F 'image=@malicious_script.exe' $UploadUrl`n" -ForegroundColor Gray
+Write-Host "$ curl --cookie 'accessToken=...' -F 'image=@malicious_script.exe' $UploadUrl`n" -ForegroundColor Gray
 
-$output = & curl.exe -s -w "`n%{http_code}" -F "image=@$maliciousFile;type=application/x-msdownload" -F "packageId=PKG01" -F "name=MaliciousPackage" -F "destination=Colombo" -F "price=100" -F "startDate=2026-01-01" -F "endDate=2026-01-02" -F "tourGuideName=Hacker" -F "tourType=Adventure" -F "description=Malicious" $UploadUrl
+$output = & curl.exe -s -w "`n%{http_code}" --cookie "accessToken=$adminToken" -F "image=@$maliciousFile;type=application/x-msdownload" -F "packageId=PKG01" -F "name=MaliciousPackage" -F "destination=Colombo" -F "price=100" -F "startDate=2026-01-01" -F "endDate=2026-01-02" -F "tourGuideName=Hacker" -F "tourType=Adventure" -F "description=Malicious" $UploadUrl
 $lines = $output -split "`n"
 $statusCode = $lines[-1].Trim()
 $responseBody = ($lines[0..($lines.Length - 2)] -join "`n").Trim()
@@ -58,9 +78,9 @@ if ($statusCode -eq "200" -or $statusCode -eq "201") {
 # ------------------------------------------------------------------------------
 Print-Header "ATTACK 2 - DoS Memory Exhaustion Upload (10MB payload)"
 
-Write-Host "$ curl -F 'image=@large_payload_10mb.jpg' $UploadUrl`n" -ForegroundColor Gray
+Write-Host "$ curl --cookie 'accessToken=...' -F 'image=@large_payload_10mb.jpg' $UploadUrl`n" -ForegroundColor Gray
 
-$output = & curl.exe -s -w "`n%{http_code}" -F "image=@$largeFile;type=image/jpeg" -F "packageId=PKG02" -F "name=LargePackage" -F "destination=Kandy" -F "price=100" -F "startDate=2026-01-01" -F "endDate=2026-01-02" -F "tourGuideName=Hacker" -F "tourType=Adventure" -F "description=DoS" $UploadUrl
+$output = & curl.exe -s -w "`n%{http_code}" --cookie "accessToken=$adminToken" -F "image=@$largeFile;type=image/jpeg" -F "packageId=PKG02" -F "name=LargePackage" -F "destination=Kandy" -F "price=100" -F "startDate=2026-01-01" -F "endDate=2026-01-02" -F "tourGuideName=Hacker" -F "tourType=Adventure" -F "description=DoS" $UploadUrl
 $lines = $output -split "`n"
 $statusCode = $lines[-1].Trim()
 $responseBody = ($lines[0..($lines.Length - 2)] -join "`n").Trim()
@@ -85,10 +105,10 @@ if ($statusCode -eq "200" -or $statusCode -eq "201") {
 # ------------------------------------------------------------------------------
 Print-Header "TEST 3 - Valid Image Upload (100KB JPEG)"
 
-Write-Host "$ curl -F 'image=@valid_avatar.jpg' $UploadUrl`n" -ForegroundColor Gray
+Write-Host "$ curl --cookie 'accessToken=...' -F 'image=@valid_avatar.jpg' $UploadUrl`n" -ForegroundColor Gray
 
 $rand = Get-Random -Minimum 100 -Maximum 999
-$output = & curl.exe -s -w "`n%{http_code}" -F "image=@$validFile;type=image/jpeg" -F "packageId=PKG$rand" -F "name=LegitPackage" -F "destination=Galle" -F "price=100" -F "startDate=2026-01-01" -F "endDate=2026-01-02" -F "tourGuideName=Guide" -F "tourType=Cultural" -F "description=Valid" $UploadUrl
+$output = & curl.exe -s -w "`n%{http_code}" --cookie "accessToken=$adminToken" -F "image=@$validFile;type=image/jpeg" -F "packageId=PKG$rand" -F "name=LegitPackage" -F "destination=Galle" -F "price=100" -F "startDate=2026-01-01" -F "endDate=2026-01-02" -F "tourGuideName=Guide" -F "tourType=Cultural" -F "description=Valid" $UploadUrl
 $lines = $output -split "`n"
 $statusCode = $lines[-1].Trim()
 $responseBody = ($lines[0..($lines.Length - 2)] -join "`n").Trim()
