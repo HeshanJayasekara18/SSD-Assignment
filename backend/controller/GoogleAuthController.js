@@ -1,7 +1,8 @@
 const { OAuth2Client } = require('google-auth-library');
-const crypto = require('crypto');
 const User = require('../model/User');
 const Tourist = require('../model/Tourist');
+const generateToken = require('../utils/generateToken');
+const setAuthCookie = require('../utils/setAuthCookie');
 
 // Initialize Google OAuth2 client with Client ID from environment variables
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
@@ -11,12 +12,14 @@ const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
  * 
  * Flow summary:
  * 1. Verifies the Google ID token sent from the frontend.
- * 2. Extracts user identity details (email, full name).
- * 3. Match by Email: Checks if an account already exists with this email.
- *    - If user exists: validates role is 'Tourist' and retrieves the linked Tourist profile.
- *    - If new user: generates a secure dummy password to satisfy User schema validation,
- *      then registers both the User and Tourist profile simultaneously (mirroring TouristRegisterController).
- * 4. Returns standard userDetails and touristDetails to match the application's login response format.
+ * 2. Extracts user identity details (email, full name, sub).
+ * 3. Match by googleSubject: Checks if a Google account is already linked.
+ *    - If not found, fall back to matching by Email to safely link an existing account
+ *      (requires email_verified === true from Google).
+ * 4. Checks if user is registered as a 'Tourist'.
+ * 5. Retrieves or creates linked Tourist profile without setting a password.
+ * 6. Generates JWT and sets auth cookie.
+ * 7. Returns standard userDetails and touristDetails to match the application's login response format.
  * 
  * @param {Object} req - Express request object containing `token` in body
  * @param {Object} res - Express response object
@@ -40,11 +43,31 @@ const googleTouristAuth = async (req, res) => {
         const payload = ticket.getPayload();
         const email = payload.email;
         const fullname = payload.name || payload.given_name || email.split('@')[0];
+        const sub = payload.sub;
 
-        // Step 4: Check if the user already exists in our database by email
-        let user = await User.findOne({ email });
+        // Step 4: Check if the user already exists in our database by googleSubject
+        let user = await User.findOne({ googleSubject: sub });
         let tourist = null;
 
+        if (!user) {
+            // Fallback: check if account exists by email to link it
+            user = await User.findOne({ email });
+
+            if (user) {
+                // Require email_verified === true before linking
+                if (!payload.email_verified) {
+                    return res.status(403).json({
+                        message: "Google email not verified. Cannot link to existing account."
+                    });
+                }
+
+                // Link the account
+                user.googleSubject = sub;
+                await user.save();
+            }
+        }
+
+        let isNewUser = false;
         if (user) {
             // Existing User: Verify that this account is registered as a Tourist
             if (user.role !== 'Tourist') {
@@ -58,29 +81,24 @@ const googleTouristAuth = async (req, res) => {
 
             // Self-healing fallback: If Tourist profile is missing for any reason, create it
             if (!tourist) {
-                const dummyPassword = crypto.randomBytes(16).toString('hex');
                 tourist = await Tourist.create({
                     username: email,
                     fullname: fullname,
                     email: email,
-                    country: 'Not Specified',
-                    mobile_number: 0,
-                    password: dummyPassword,
-                    userID: user.userID
+                    userID: user.userID,
+                    authProvider: 'google',
+                    country: 'Not Specified'
                 });
             }
         } else {
             // Step 5: New User Registration
-            // Since MongoDB User model requires a password, generate a secure random dummy password.
-            // OAuth users sign in via Google and won't need to enter this password manually.
-            const dummyPassword = crypto.randomBytes(16).toString('hex');
-
-            // Replicate standard registration: create base User record
+            isNewUser = true;
             user = await User.create({
                 username: email,
-                password: dummyPassword,
                 role: 'Tourist',
-                email: email
+                email: email,
+                authProvider: 'google',
+                googleSubject: sub
             });
 
             // Replicate standard registration: create linked Tourist profile with matching userID
@@ -88,16 +106,27 @@ const googleTouristAuth = async (req, res) => {
                 username: email,
                 fullname: fullname,
                 email: email,
-                country: 'Not Specified',
-                mobile_number: 0,
-                password: dummyPassword,
-                userID: user.userID
+                userID: user.userID,
+                authProvider: 'google',
+                country: 'Not Specified'
             });
         }
 
-        // Step 6: Return formatted response identical to standard LoginController
+        // Step 6: Generate JWT and set Auth Cookie
+        const jwtToken = generateToken(user);
+        setAuthCookie(res, jwtToken);
+
+        const isProfileComplete = Boolean(
+            tourist.mobile_number && 
+            tourist.country && 
+            tourist.country !== 'Not Specified'
+        );
+
+        // Step 7: Return formatted response identical to standard LoginController
         return res.status(200).json({
             message: 'Google login successful',
+            isNewUser,
+            isProfileComplete,
             userDetails: {
                 userID: user.userID,
                 username: user.username,
@@ -107,8 +136,8 @@ const googleTouristAuth = async (req, res) => {
             touristDetails: {
                 touristID: tourist.touristID,
                 fullname: tourist.fullname,
-                country: tourist.country,
-                mobile_number: tourist.mobile_number,
+                country: tourist.country || 'Not Specified',
+                mobile_number: tourist.mobile_number || null,
             }
         });
 
@@ -122,4 +151,3 @@ const googleTouristAuth = async (req, res) => {
 };
 
 module.exports = { googleTouristAuth };
-

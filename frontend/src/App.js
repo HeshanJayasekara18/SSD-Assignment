@@ -37,6 +37,7 @@ import MainLogin from './common/main-login/MainLogin';
 import TouristSignup from './pages/tourist/tourist-signup/TouristSignup';
 import LandingPages from './pages/landing/Landing';
 import BookingView from './pages/tourist/booking-view/BookingView';
+import CompleteProfile from './pages/tourist/complete-profile/CompleteProfile';
 
 import TourGuideDashboard from './pages/tour-guide/tourguide-dashboard/TourGuideDashboard';
 import TourGuideProfile from './pages/tour-guide/tourguide-profile/TourGuideProfile';
@@ -61,6 +62,7 @@ function App() {
         <BrowserRouter>
           <Routes>
             <Route path="/tourist-signup" element={<TouristSignup/>}/>
+            <Route path="/complete-profile" element={<CompleteProfile/>}/>
             <Route path="/property-signup" element={<PropertySignup/>}/>
             <Route path="/login" element={<MainLogin/>}/>
             <Route path="/payment-success" element={<PaymentSuccess/>}/>
